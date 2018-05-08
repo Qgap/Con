@@ -144,6 +144,8 @@ static ContactsObjc *contacts = nil;
             
             if (name && name.length > 0) {
                 model.fullName = name;
+            } else {
+                model.fullName = @"*无姓名";
             }
 
             //读取电话多值
@@ -161,9 +163,9 @@ static ContactsObjc *contacts = nil;
             
             model.headerImage = [UIImage imageWithData:contact.imageData];
             
-            model.recordID = contact.identifier.integerValue;
+            model.identifier = contact.identifier;
             
-            NSLog(@"recordId :%@",contact.identifier);
+            NSLog(@"recordId :%@",model.identifier);
             
             [dataArray addObject:model];
             
@@ -198,6 +200,8 @@ static ContactsObjc *contacts = nil;
         if (name && name.length > 0) {
         
             model.fullName = name;
+        } else {
+            model.fullName = @"*无姓名";
         }
         
         //读取电话多值
@@ -215,7 +219,7 @@ static ContactsObjc *contacts = nil;
         NSData *imageData = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
         model.headerImage = [UIImage imageWithData:imageData];
         
-        model.recordID = (int)ABRecordGetRecordID(person);
+        model.recordID = ABRecordGetRecordID(person);
         
         [dataArray addObject:model];
     }
@@ -224,18 +228,35 @@ static ContactsObjc *contacts = nil;
     return dataArray;
 }
 
-+ (void)deleteRecord: (NSInteger)recordId {
-    CFErrorRef error = NULL;
-    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
-    ABRecordID recordID = recordId;
-    ABRecordRef record = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
++ (void)deleteRecord:(GQContactModel *)model {
     
-    //删除记录
-    ABAddressBookRemoveRecord(addressBook, record, &error);
+    if (@available(iOS 9.0, *)) {
+        CNContactStore *store = [[CNContactStore alloc]init];
+        NSArray *keys = @[CNContactGivenNameKey,
+                          CNContactPhoneNumbersKey,
+                          CNContactEmailAddressesKey,
+                          CNContactIdentifierKey];
+        CNMutableContact *contact = [[store unifiedContactWithIdentifier:model.identifier keysToFetch:keys error:nil] mutableCopy];
+        NSError *error;
+        CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
+        [saveRequest deleteContact:contact];
+        [store executeSaveRequest:saveRequest error:&error];
+        
+    } else {
+        CFErrorRef error = NULL;
+        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+        ABRecordID recordID = model.recordID;
+        ABRecordRef record = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
+        //删除记录
+        ABAddressBookRemoveRecord(addressBook, record, &error);
+        
+        //保存到数据库
+        ABAddressBookSave(addressBook, &error);
+        CFRelease(addressBook);
+
+    }
     
-    //保存到数据库
-    ABAddressBookSave(addressBook, &error);
-    CFRelease(addressBook);
+    
 }
 
 + (void)getOrderAddressBook:(AddressBookDictBlock)addressBookInfo authorizationFailure:(AuthorizationFailure)failure {
@@ -248,6 +269,7 @@ static ContactsObjc *contacts = nil;
          NSArray *contacts = [ContactsObjc allAddressBook];
          
          [contacts enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+             
              NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
              NSLog(@"firstLetterString :%@",firstLetterString);
              

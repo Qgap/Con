@@ -61,18 +61,18 @@
     
     self.navigationItem.title = @"通讯录";
     
-    self.createBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.createBtn.frame = CGRectMake(20, 10, 17, 23);
-
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithCustomView:self.createBtn];
-    [self.createBtn addTarget:self action:@selector(createContact) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = rightItem;
+//    self.createBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+//    self.createBtn.frame = CGRectMake(20, 10, 17, 23);
+//
+//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithCustomView:self.createBtn];
+//    [self.createBtn addTarget:self action:@selector(createContact) forControlEvents:UIControlEventTouchUpInside];
+//    self.navigationItem.rightBarButtonItem = rightItem;
+//
+//    self.moreBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+//    self.moreBtn.frame = CGRectMake(20, 10, 17, 23);
+//    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.moreBtn];
+//    [self.createBtn addTarget:self action:@selector(moreAction) forControlEvents:UIControlEventTouchUpInside];
     
-    self.moreBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.moreBtn.frame = CGRectMake(20, 10, 17, 23);
-    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.moreBtn];
-    [self.createBtn addTarget:self action:@selector(moreAction) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = leftItem;
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 49) style:UITableViewStyleGrouped];
     
@@ -82,6 +82,9 @@
     self.tableView.estimatedSectionFooterHeight = 0;
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.sectionIndexColor = [UIColor grayColor];
+    if (@available(iOS 11.0, *)) {
+//        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     [self.view addSubview:self.tableView];
 
 }
@@ -179,13 +182,11 @@
         
         NSString *key = _keys[self.indexPath.section];
         
-        
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:self.indexPath.row];
-        [ContactsObjc deleteRecord:model.recordID];
+        [ContactsObjc deleteRecord:model];
+        [_contactPeopleDict[key] removeObjectAtIndex:self.indexPath.row];
+        [self.tableView reloadData];
 
-//        [self.tableView deleteRowsAtIndexPaths:@[self.indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-//        
-//        [_contactPeopleDict[key] removeObjectAtIndex:self.indexPath.row];
     }
 }
 

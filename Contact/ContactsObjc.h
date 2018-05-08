@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class GQContactModel;
+
 typedef void(^AddressBookDictBlock)(NSDictionary<NSString *,NSArray *> *addressBookDict,NSArray *nameKeys);
 
 typedef void(^AuthorizationFailure)(void);
@@ -18,6 +20,6 @@ typedef void(^AuthorizationFailure)(void);
 
 + (void)getOrderAddressBook:(AddressBookDictBlock)addressBookInfo authorizationFailure:(AuthorizationFailure)failure;
 
-+ (void)deleteRecord: (NSInteger)recordId;
++ (void)deleteRecord:(GQContactModel *)model;
 
 @end

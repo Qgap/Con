@@ -19,4 +19,6 @@
 
 @property NSInteger recordID;
 
+@property (nonatomic, copy)NSString *identifier;
+
 @end
