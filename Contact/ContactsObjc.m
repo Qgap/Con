@@ -113,12 +113,34 @@ static ContactsObjc *contacts = nil;
 }
 
 // 获取通讯录信息
-+ (NSArray *)allAddressBook {
++ (void)allAddressBook:(ContactsArray)contacts authorizationFailure:(AuthorizationFailure)failure {
+    
+    
     
     NSMutableArray *dataArray = [[NSMutableArray alloc]init];
     
     if (@available(iOS 9.0, *)) {
+        
         CNContactStore *store = [[CNContactStore alloc] init];
+        
+        CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+        // 2.如果没有授权,先执行授权失败的block后return
+        if (status == CNAuthorizationStatusNotDetermined) {
+            [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                if (granted) {
+                    
+                } else {
+                    failure ? failure() : nil;
+                    return;
+                }
+            }];
+        } else if (status != CNAuthorizationStatusAuthorized) {
+            failure ? failure() : nil;
+            return;
+        }
+        
+        
+        
         
         NSArray *keys = @[CNContactGivenNameKey,
                           CNContactFamilyNameKey,
@@ -168,65 +190,130 @@ static ContactsObjc *contacts = nil;
             NSLog(@"recordId :%@",model.identifier);
             
             [dataArray addObject:model];
-            
+
         }];
+        
+        contacts ? contacts(dataArray) : nil;
+        
     } else {
-        [self addressBook];
+        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+        
+        // 1.获取授权状态
+        ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+        if (status == kABAuthorizationStatusNotDetermined) {
+            ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+                if (granted) {
+                    
+                } else {
+                    failure ? failure() : nil;
+                    return;
+                }
+                
+            });
+        } else if (status == kABAuthorizationStatusDenied) {
+            failure ? failure() : nil;
+            return;
+        }
+        
+        
+        
+        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBookRef);
+        CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBookRef);
+        
+        NSMutableArray *dataArray = [[NSMutableArray alloc] init];
+        
+        
+        for ( int i = 0; i < numberOfPeople; i++){
+            GQContactModel *model = [[GQContactModel alloc] init];
+            
+            ABRecordRef person = CFArrayGetValueAtIndex(people, i);
+            
+            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+            NSString *name = [NSString stringWithFormat:@"%@%@", lastName ?:@"", firstName ?:@""];
+            
+            if (name && name.length > 0) {
+                
+                model.fullName = name;
+            } else {
+                model.fullName = @"*无姓名";
+            }
+            
+            //读取电话多值
+            ABMultiValueRef phone = ABRecordCopyValue(person, kABPersonPhoneProperty);
+            for (int k = 0; k<ABMultiValueGetCount(phone); k++) {
+                //获取該Label下的电话值
+                NSString * personPhone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(phone, k);
+                
+                if (personPhone && personPhone.length > 0) {
+                    
+                    [model.mobileArray addObject:personPhone];
+                }
+            }
+            
+            NSData *imageData = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
+            model.headerImage = [UIImage imageWithData:imageData];
+            
+            model.recordID = ABRecordGetRecordID(person);
+            
+            [dataArray addObject:model];
+
+        }
+        
+        contacts ? contacts(dataArray) : nil;
     }
-    
-    return dataArray;
 }
 
-// 获取通讯录信息
-+ (NSArray *)addressBook {
-    
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-    
-    CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBookRef);
-    CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBookRef);
-    
-    NSMutableArray *dataArray = [[NSMutableArray alloc] init];
-    
-    
-    for ( int i = 0; i < numberOfPeople; i++){
-        GQContactModel *model = [[GQContactModel alloc] init];
-        
-        ABRecordRef person = CFArrayGetValueAtIndex(people, i);
-        
-        NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-        NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-        NSString *name = [NSString stringWithFormat:@"%@%@", lastName ?:@"", firstName ?:@""];
-        
-        if (name && name.length > 0) {
-        
-            model.fullName = name;
-        } else {
-            model.fullName = @"*无姓名";
-        }
-        
-        //读取电话多值
-        ABMultiValueRef phone = ABRecordCopyValue(person, kABPersonPhoneProperty);
-        for (int k = 0; k<ABMultiValueGetCount(phone); k++) {
-            //获取該Label下的电话值
-            NSString * personPhone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(phone, k);
-            
-            if (personPhone && personPhone.length > 0) {
-                
-                [model.mobileArray addObject:personPhone];
-            }
-        }
-        
-        NSData *imageData = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
-        model.headerImage = [UIImage imageWithData:imageData];
-        
-        model.recordID = ABRecordGetRecordID(person);
-        
-        [dataArray addObject:model];
-    }
-    
-    
-    return dataArray;
-}
+//// 获取通讯录信息
+//+ (NSArray *)addressBook {
+//
+//    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//
+//    CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBookRef);
+//    CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBookRef);
+//
+//    NSMutableArray *dataArray = [[NSMutableArray alloc] init];
+//
+//
+//    for ( int i = 0; i < numberOfPeople; i++){
+//        GQContactModel *model = [[GQContactModel alloc] init];
+//
+//        ABRecordRef person = CFArrayGetValueAtIndex(people, i);
+//
+//        NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+//        NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+//        NSString *name = [NSString stringWithFormat:@"%@%@", lastName ?:@"", firstName ?:@""];
+//
+//        if (name && name.length > 0) {
+//
+//            model.fullName = name;
+//        } else {
+//            model.fullName = @"*无姓名";
+//        }
+//
+//        //读取电话多值
+//        ABMultiValueRef phone = ABRecordCopyValue(person, kABPersonPhoneProperty);
+//        for (int k = 0; k<ABMultiValueGetCount(phone); k++) {
+//            //获取該Label下的电话值
+//            NSString * personPhone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(phone, k);
+//
+//            if (personPhone && personPhone.length > 0) {
+//
+//                [model.mobileArray addObject:personPhone];
+//            }
+//        }
+//
+//        NSData *imageData = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
+//        model.headerImage = [UIImage imageWithData:imageData];
+//
+//        model.recordID = ABRecordGetRecordID(person);
+//
+//        [dataArray addObject:model];
+//    }
+//
+//
+//    return dataArray;
+//}
 
 + (void)deleteRecord:(GQContactModel *)model {
     
@@ -255,61 +342,63 @@ static ContactsObjc *contacts = nil;
         CFRelease(addressBook);
 
     }
-    
-    
 }
 
 + (void)getOrderAddressBook:(AddressBookDictBlock)addressBookInfo authorizationFailure:(AuthorizationFailure)failure {
+    
+    
     // 将耗时操作放到子线程
     dispatch_queue_t queue = dispatch_queue_create("addressBook.infoDict", DISPATCH_QUEUE_SERIAL);
     
      dispatch_async(queue, ^{
          NSMutableDictionary *addressBookDict = [NSMutableDictionary dictionary];
-         
-         NSArray *contacts = [ContactsObjc allAddressBook];
-         
-         [contacts enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
-             
-             NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
-             NSLog(@"firstLetterString :%@",firstLetterString);
-             
-             if (addressBookDict[firstLetterString]) {
-                 [addressBookDict[firstLetterString] addObject:model];
-                 NSLog(@"addressBookDict :%@",addressBookDict);
-             } else {
-                 //创建新发可变数组存储该首字母对应的联系人模型
-                 NSMutableArray *arrGroupNames = [NSMutableArray arrayWithCapacity:10];
+        
+         [ContactsObjc allAddressBook:^(NSArray *contacts) {
+             [contacts enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
                  
-                 [arrGroupNames addObject:model];
-                 //将首字母-姓名数组作为key-value加入到字典中
-                 [addressBookDict setObject:arrGroupNames forKey:firstLetterString];
+                 NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
+                 NSLog(@"firstLetterString :%@",firstLetterString);
+                 
+                 if (addressBookDict[firstLetterString]) {
+                     [addressBookDict[firstLetterString] addObject:model];
+                     NSLog(@"addressBookDict :%@",addressBookDict);
+                 } else {
+                     //创建新发可变数组存储该首字母对应的联系人模型
+                     NSMutableArray *arrGroupNames = [NSMutableArray arrayWithCapacity:10];
+                     
+                     [arrGroupNames addObject:model];
+                     //将首字母-姓名数组作为key-value加入到字典中
+                     [addressBookDict setObject:arrGroupNames forKey:firstLetterString];
+                 }
+                 
+             }];
+             
+             //         // 将addressBookDict字典中的所有Key值进行排序: A~Z
+             NSArray *nameKeys = [[addressBookDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+             //
+             NSLog(@"%@,",nameKeys);
+             //
+             // 将 "#" 排列在 A~Z 的后面
+             if ([nameKeys.firstObject isEqualToString:@"#"]) {
+                 NSMutableArray *mutableNamekeys = [NSMutableArray arrayWithArray:nameKeys];
+                 [mutableNamekeys insertObject:nameKeys.firstObject atIndex:nameKeys.count];
+                 [mutableNamekeys removeObjectAtIndex:0];
+                 
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     addressBookInfo ? addressBookInfo(addressBookDict,mutableNamekeys) : nil;
+                 });
+                 return;
              }
              
-         }];
-         
-//         // 将addressBookDict字典中的所有Key值进行排序: A~Z
-         NSArray *nameKeys = [[addressBookDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
-//
-         NSLog(@"%@,",nameKeys);
-//
-         // 将 "#" 排列在 A~Z 的后面
-         if ([nameKeys.firstObject isEqualToString:@"#"])
-         {
-             NSMutableArray *mutableNamekeys = [NSMutableArray arrayWithArray:nameKeys];
-             [mutableNamekeys insertObject:nameKeys.firstObject atIndex:nameKeys.count];
-             [mutableNamekeys removeObjectAtIndex:0];
-
+             // 将排序好的通讯录数据回调到主线程
              dispatch_async(dispatch_get_main_queue(), ^{
-                 addressBookInfo ? addressBookInfo(addressBookDict,mutableNamekeys) : nil;
+                 addressBookInfo ? addressBookInfo(addressBookDict,nameKeys) : nil;
              });
-             return;
-         }
-         
-         // 将排序好的通讯录数据回调到主线程
-         dispatch_async(dispatch_get_main_queue(), ^{
-             addressBookInfo ? addressBookInfo(addressBookDict,nameKeys) : nil;
-         });
-         
+         } authorizationFailure:^{
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 failure ? failure() : nil;
+             });
+         }];
      });
 }
 

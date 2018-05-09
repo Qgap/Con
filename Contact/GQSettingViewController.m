@@ -9,7 +9,8 @@
 #import "GQSettingViewController.h"
 #import "ContactsObjc.h"
 #import "GQContactModel.h"
-
+#import "AuthTipView.h"
+#import "GQSortViewController.h"
 
 #define SCREEN_WIDTH                        ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT                       ([UIScreen mainScreen].bounds.size.height)
@@ -21,6 +22,8 @@
 @property (nonatomic, strong)NSMutableArray *sameNameArray;
 @property (nonatomic, strong)NSMutableArray *samePhoneArray;
 @property (nonatomic, strong)NSMutableArray *noNameArray;
+@property (nonatomic, strong)AuthTipView *authTipView;
+@property (nonatomic, strong)NSArray *totalArray;
 @end
 
 @implementation GQSettingViewController
@@ -34,7 +37,16 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    NSArray *allAddress = [ContactsObjc allAddressBook];
+    
+    __block NSMutableArray *allAddress = [NSMutableArray arrayWithCapacity:0];
+    [ContactsObjc allAddressBook:^(NSArray *contacts) {
+        allAddress = contacts;
+    } authorizationFailure:^{
+        self.authTipView.hidden = NO;
+        return ;
+    }];
+    
+//    NSArray *allAddress = nil;
     NSArray *addressArray = [NSArray arrayWithArray:allAddress];
     self.sameNameArray = [[[NSMutableArray alloc] init] mutableCopy];
     self.samePhoneArray = [[[NSMutableArray alloc] init] mutableCopy];
@@ -54,8 +66,9 @@
         __block NSMutableArray *phoneArray = [[NSMutableArray alloc] init];
         
         [addressArray enumerateObjectsUsingBlock:^(GQContactModel *obj, NSUInteger index, BOOL * _Nonnull stop) {
+            NSLog(@"idx :%d, index:%d",idx, index);
             
-            if (index == idx && index < idx) {
+            if (index == idx) {
                 *stop = YES;
                 return ;
             }
@@ -64,12 +77,14 @@
                 if ([obj.mobileArray containsObject:phone]) {
                     [phoneArray addObject:obj];
                     [phoneArray addObject:model];
-                    [phoneDic setObject:phoneArray forKey:phone];
+//                    [phoneDic setObject:phoneArray forKey:phone];
+                    [phoneDic setObject:phoneArray forKey:@"data"];
+                    [phoneDic setObject:phone forKey:@"key"];
                     [self.samePhoneArray addObject:phoneDic];
                 }
             }
             
-            if ([model.fullName isEqualToString:obj.fullName] && idx != index && idx > index) {
+            if ([model.fullName isEqualToString:obj.fullName] && idx != index && idx > index && ![obj.fullName isEqualToString:@"*无姓名 "]) {
                 [tmpArray addObject:obj];
                 isDup = YES;
             }
@@ -78,15 +93,30 @@
         
         if (isDup) {
             [tmpArray addObject:model];
-            [dic setObject:tmpArray forKey:model.fullName];
+//            [dic setObject:tmpArray forKey:model.fullName];
+            [dic setObject:model.fullName forKey:@"key"];
+            [dic setObject:tmpArray forKey:@"data"];
             [self.sameNameArray addObject:dic];
         }
         
         NSLog(@"same name = %@,same phone :%@, no name %@",self.sameNameArray,self.samePhoneArray,self.noNameArray);
     }];
+    self.totalArray = @[self.sameNameArray,self.samePhoneArray,self.noNameArray];
     
+    [self.tableView reloadData];
     
 }
+
+- (AuthTipView *)authTipView {
+    if (!_authTipView) {
+        _authTipView = [[AuthTipView alloc] initWithFrame:self.view.frame];
+        _authTipView.hidden = YES;
+        [self.view addSubview:_authTipView];
+    }
+    
+    return _authTipView;
+}
+
 
 - (UITableView *)tableView {
     if (!_tableView) {
@@ -116,9 +146,10 @@
     } else if (indexPath.row == 1) {
         cell.textLabel.text = [NSString stringWithFormat:@"联系人号码重复共%lu组",(unsigned long)self.samePhoneArray.count];
         
+        
     } else {
         
-        cell.textLabel.text = [NSString stringWithFormat:@"联系人无号码共%lu组",(unsigned long)self.noNameArray.count];
+        cell.textLabel.text = [NSString stringWithFormat:@"联系人无姓名共%lu组",(unsigned long)self.noNameArray.count];
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -130,6 +161,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    NSArray *array = self.totalArray[indexPath.row];
+    if (array.count == 0) {
+        NSLog(@"恭喜，没有无姓名的联系人～ ");
+    } else {
+        NSArray *typeArray = @[@"0",@"1",@"2"];
+        GQSortViewController *viewController = [[GQSortViewController alloc] initWithType:[typeArray[indexPath.row] integerValue] data:self.totalArray[indexPath.row]];
+        viewController.hidesBottomBarWhenPushed = YES;
+
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
+
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

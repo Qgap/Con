@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A78269620A2A6270085E1C3 /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */; };
 		3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309E520A1726A00035C9A /* AppDelegate.m */; };
 		3AB309EE20A1726A00035C9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AB309ED20A1726A00035C9A /* Assets.xcassets */; };
 		3AB309F420A1726A00035C9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309F320A1726A00035C9A /* main.m */; };
@@ -17,6 +18,8 @@
 		3AB30A2120A17C3A00035C9A /* GQSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2020A17C3A00035C9A /* GQSettingViewController.m */; };
 		3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2220A18DDE00035C9A /* ContactsObjc.m */; };
 		3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2F20A1958100035C9A /* GQContactModel.m */; };
+		3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */; };
+		3AB96BE320A2FC62005345D0 /* GQSortViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB96BE220A2FC62005345D0 /* GQSortViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A78269420A2A6270085E1C3 /* ContactTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
+		3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		3AB309E120A1726A00035C9A /* Contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Contact.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB309E420A1726A00035C9A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3AB309E520A1726A00035C9A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -59,6 +64,10 @@
 		3AB30A2320A18DDE00035C9A /* ContactsObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsObjc.h; sourceTree = "<group>"; };
 		3AB30A2E20A1958100035C9A /* GQContactModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQContactModel.h; sourceTree = "<group>"; };
 		3AB30A2F20A1958100035C9A /* GQContactModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQContactModel.m; sourceTree = "<group>"; };
+		3AB96BDE20A2E9BF005345D0 /* AuthTipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthTipView.h; sourceTree = "<group>"; };
+		3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AuthTipView.m; sourceTree = "<group>"; };
+		3AB96BE120A2FC62005345D0 /* GQSortViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQSortViewController.h; sourceTree = "<group>"; };
+		3AB96BE220A2FC62005345D0 /* GQSortViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQSortViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +133,12 @@
 				3AB30A2020A17C3A00035C9A /* GQSettingViewController.m */,
 				3AB30A2E20A1958100035C9A /* GQContactModel.h */,
 				3AB30A2F20A1958100035C9A /* GQContactModel.m */,
+				3A78269420A2A6270085E1C3 /* ContactTableViewCell.h */,
+				3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */,
+				3AB96BDE20A2E9BF005345D0 /* AuthTipView.h */,
+				3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */,
+				3AB96BE120A2FC62005345D0 /* GQSortViewController.h */,
+				3AB96BE220A2FC62005345D0 /* GQSortViewController.m */,
 			);
 			path = Contact;
 			sourceTree = "<group>";
@@ -277,11 +292,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AB96BE320A2FC62005345D0 /* GQSortViewController.m in Sources */,
+				3A78269620A2A6270085E1C3 /* ContactTableViewCell.m in Sources */,
 				3AB309F420A1726A00035C9A /* main.m in Sources */,
 				3AB30A1E20A17C2900035C9A /* GQContactViewController.m in Sources */,
 				3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */,
 				3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */,
 				3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */,
+				3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */,
 				3AB30A1B20A176BE00035C9A /* GQMainViewController.m in Sources */,
 				3AB30A2120A17C3A00035C9A /* GQSettingViewController.m in Sources */,
 			);
