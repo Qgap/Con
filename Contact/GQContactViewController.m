@@ -10,11 +10,13 @@
 #import "ContactsObjc.h"
 #import "GQContactModel.h"
 #import "AuthTipView.h"
+#import <ContactsUI/ContactsUI.h>
+#import <AddressBookUI/AddressBookUI.h>
 
 #define SCREEN_WIDTH                        ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT                       ([UIScreen mainScreen].bounds.size.height)
 
-@interface GQContactViewController () <UITableViewDelegate, UITableViewDataSource,UIAlertViewDelegate>
+@interface GQContactViewController () <UITableViewDelegate, UITableViewDataSource,UIAlertViewDelegate,CNContactPickerDelegate,ABPeoplePickerNavigationControllerDelegate,ABNewPersonViewControllerDelegate,CNContactViewControllerDelegate>
 
 @property (nonatomic, strong)UIButton *cancelBtn;
 
@@ -44,7 +46,7 @@
     [super viewDidLoad];
     
     [self setUpUI];
-    
+
     
 }
 
@@ -65,12 +67,7 @@
     } authorizationFailure:^{
         
         self.authTipView.hidden = NO;
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
-//                                                        message:@"请在iPhone的“设置-隐私-通讯录”选项中，允许应用访问您的通讯录"
-//                                                       delegate:nil
-//                                              cancelButtonTitle:@"知道了"
-//                                              otherButtonTitles:nil];
-//        [alert show];
+
     }];
 }
 
@@ -91,8 +88,8 @@
     
     self.cancelBtn = [UIButton buttonWithType:UIButtonTypeSystem];
     self.cancelBtn.frame = CGRectMake(20, 10, 17, 23);
-    [self.cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
-    self.cancelBtn.hidden = YES;
+    [self.cancelBtn setTitle:@"新建" forState:UIControlStateNormal];
+//    self.cancelBtn.hidden = YES;
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc]initWithCustomView:self.cancelBtn];
     [self.cancelBtn addTarget:self action:@selector(createContact) forControlEvents:UIControlEventTouchUpInside];
     
@@ -129,21 +126,7 @@
     self.deleteArray = [[NSMutableArray alloc] init];
 }
 
-- (void)deleteContacts {
-    if (self.deleteArray.count == 0) {
-        NSLog(@"您当前没有选择要删除的联系人");
-    } else {
-        
-        NSString *msg = [NSString stringWithFormat:@"确认删除选中的:%lu个联系人",(unsigned long)self.deleteArray.count];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
-                                                        message:msg
-                                                       delegate:self
-                                              cancelButtonTitle:@"取消"
-                                              otherButtonTitles:@"确认", nil];
-        [alert show];
-    }
-    
-}
+
 
 #pragma mark - UITableViewDelegate && UITableViewDataSource
 
@@ -213,6 +196,28 @@
         [self.deleteArray addObject:model];
         NSLog(@"以选中:%lu",(unsigned long)self.deleteArray.count);
     } else {
+//        https://stackoverflow.com/questions/33391950/contact-is-missing-some-of-the-required-key-descriptors-in-ios/34463528
+        NSString *key = _keys[indexPath.section];
+        GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
+        if (@available(iOS 9.0, *)) {
+            CNContactStore *store = [[CNContactStore alloc]init];
+            NSArray *keys = @[CNContactGivenNameKey,
+                              CNContactPhoneNumbersKey,
+                              CNContactEmailAddressesKey,
+                              CNContactIdentifierKey,
+                              CNContactViewController.descriptorForRequiredKeys];
+            CNMutableContact *mutableContact = [[store unifiedContactWithIdentifier:model.identifier keysToFetch:keys error:nil] mutableCopy];
+            CNContactViewController *contactController = [CNContactViewController viewControllerForUnknownContact:mutableContact];
+            contactController.hidesBottomBarWhenPushed = YES;
+            contactController.delegate = self;
+            contactController.allowsActions = YES;
+            contactController.allowsEditing = YES;
+            [self.navigationController pushViewController:contactController animated:YES];
+            
+        } else {
+            // Fallback on earlier versions
+        }
+       
         
     }
 }
@@ -256,9 +261,13 @@
     return _keys;
 }
 
+#pragma mark - Button Action
+
 - (void)createContact {
     if (self.isEdit) {
         [self editAction];
+    } else {
+        [self createNewContact];
     }
 }
 
@@ -269,12 +278,65 @@
     [self.tableView setEditing:self.isEdit animated:YES];
     
     if (self.isEdit) {
-        self.cancelBtn.hidden = NO;
+        [self.cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
     } else {
-        self.cancelBtn.hidden = YES;
+        [self.cancelBtn setTitle:@"新建" forState:UIControlStateNormal];
     }
     
 }
+
+- (void)createNewContact {
+    if (@available(iOS 9.0, *)) {
+        CNMutableContact *contact = [[CNMutableContact alloc] init];
+       
+        CNContactViewController *contactController = [CNContactViewController viewControllerForNewContact:contact];
+        contactController.delegate = self;
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:contactController];
+        [self presentViewController:nav animated:YES completion:nil];
+    }
+    else
+    {
+        ABNewPersonViewController *picker = [[ABNewPersonViewController alloc] init];
+        ABRecordRef newPerson = ABPersonCreate();
+        picker.displayedPerson = newPerson;
+        CFRelease(newPerson);
+        picker.newPersonViewDelegate = self;
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:picker];
+        [self presentViewController:nav animated:YES completion:nil];
+    }
+}
+
+- (void)deleteContacts {
+    if (self.deleteArray.count == 0) {
+        NSLog(@"您当前没有选择要删除的联系人");
+    } else {
+        
+        NSString *msg = [NSString stringWithFormat:@"确认删除选中的:%lu个联系人",(unsigned long)self.deleteArray.count];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                        message:msg
+                                                       delegate:self
+                                              cancelButtonTitle:@"取消"
+                                              otherButtonTitles:@"确认", nil];
+        [alert show];
+    }
+    
+}
+
+#pragma mark - ABNewPersonViewControllerDelegate
+
+- (void)newPersonViewController:(ABNewPersonViewController *)newPersonView didCompleteWithNewPerson:(nullable ABRecordRef)person
+{
+    [newPersonView dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - CNContactViewControllerDelegate
+
+- (void)contactViewController:(CNContactViewController *)viewController didCompleteWithContact:(nullable CNContact *)contact
+{
+    [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UIAlertViewDelegate
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 1) {

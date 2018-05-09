@@ -11,6 +11,7 @@
 #import <ContactsUI/ContactsUI.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import <Contacts/Contacts.h>
+#import "ContactsObjc.h"
 
 #define SCREEN_WIDTH                        ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT                       ([UIScreen mainScreen].bounds.size.height)
@@ -19,7 +20,7 @@
 
 @interface GQSortViewController () <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, strong)NSArray *sameNameArray;
+@property (nonatomic, strong)NSMutableArray *sameNameArray;
 @property (nonatomic, strong)NSArray *samePhoneArray;
 @property (nonatomic, strong)NSArray *noNameArray;
 
@@ -38,7 +39,7 @@
     if (self) {
         switch (type) {
             case SameNameType:
-                self.sameNameArray = array;
+                self.sameNameArray = [array mutableCopy];
                 break;
             case SamePhoneType:
                 self.samePhoneArray = array;
@@ -79,7 +80,9 @@
     if (!_footerView) {
         _footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 49)];
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mergeAction:)];
+        _footerView.userInteractionEnabled = YES;
         [_footerView addGestureRecognizer:tapGesture];
+        _footerView.backgroundColor = [UIColor whiteColor];
         
         UILabel *label = [[UILabel alloc] initWithFrame:_footerView.frame];
         label.textAlignment = NSTextAlignmentCenter;
@@ -99,20 +102,52 @@
     switch (self.type) {
         case SameNameType:{
             if (@available(iOS 9.0, *)) {
-                CNMutableContact *contact = [[CNMutableContact alloc] init];
-                contact.givenName = self.sameNameArray[index][@"key"];
                 NSArray *modelArray = self.sameNameArray[index][@"data"];
+                GQContactModel *model = modelArray.firstObject;
+                
+                CNContactStore *store = [[CNContactStore alloc]init];
+                NSArray *keys = @[CNContactGivenNameKey,
+                                  CNContactPhoneNumbersKey,
+                                  CNContactEmailAddressesKey,
+                                  CNContactIdentifierKey];
+                CNMutableContact *mutableContact = [[store unifiedContactWithIdentifier:model.identifier keysToFetch:keys error:nil] mutableCopy];
+
+                __block NSMutableArray *phoneNumbers = [mutableContact.phoneNumbers mutableCopy];
+                
+                NSLog(@"phoneNumbers :%@",phoneNumbers);
+                
                 [modelArray enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
-                    for (NSString *phone in model.mobileArray) {
-                        NSLog(@"phone :%@",phone);
-                        contact.phoneNumbers = @[[CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberiPhone value:[CNPhoneNumber phoneNumberWithStringValue:phone]]];
+                    if (idx != 0) {
+                        
+                        for (NSString *phone in model.mobileArray) {
+                            CNLabeledValue *phoneNumber = [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMobile
+                                                                          value:[CNPhoneNumber phoneNumberWithStringValue:phone]];
+                            
+                            NSLog(@"phone :%@",phone);
+                            [phoneNumbers addObject:phoneNumber];
+                        }
+                        [ContactsObjc deleteRecord:model];
                     }
+                    
+
                 }];
-                CNSaveRequest * saveRequest = [[CNSaveRequest alloc]init];
-                //添加联系人
-                [saveRequest addContact:contact toContainerWithIdentifier:nil];
+
+                mutableContact.phoneNumbers = phoneNumbers;
+                
+                NSLog(@"mutableContact.phoneNumbers :%@",phoneNumbers);
+                CNSaveRequest * saveRequest = [[CNSaveRequest alloc] init];
+//                [saveRequest addContact:mutableContact toContainerWithIdentifier:model.identifier];
+                [saveRequest updateContact:mutableContact];
+                BOOL result = [store executeSaveRequest:saveRequest error:nil];
+                if (result) {
+                    [self.sameNameArray removeObjectAtIndex:index];
+                    [self.tableView reloadData];
+                }
+                
+                
+                
             } else {
-                // Fallback on earlier versions
+                NSLog(@"暂不支持iOS 8 ～");
             }
             
             
@@ -127,6 +162,8 @@
             break;
     }
 }
+
+
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -156,6 +193,9 @@
     return self.footerView;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 44;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
