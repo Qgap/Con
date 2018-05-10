@@ -46,7 +46,7 @@ static ContactsObjc *contacts = nil;
     self.contactsArray = [[NSMutableArray alloc] init];
     self.nameKeys = [[NSMutableArray alloc] init];
     self.sortDic = [[NSMutableDictionary alloc] init];
-    [self getAllAddress];
+    [self allAddressBook];
     [self getOrderAddressBook];
     
 }
@@ -99,10 +99,6 @@ static dispatch_queue_t get_all_contacts_queue() {
     return NO;
 }
 
-- (void)getAllAddress {
-    if (!self.granted) {return;}
-   
-}
 
 - (NSArray *)contactsArray {
     if (_contactsArray.count == 0) {
@@ -121,6 +117,8 @@ static dispatch_queue_t get_all_contacts_queue() {
 
 // 获取通讯录信息
 - (void)allAddressBook {
+    
+    if (!self.granted) {return;}
     
     NSMutableArray *dataArray = [[NSMutableArray alloc]init];
     
@@ -152,13 +150,10 @@ static dispatch_queue_t get_all_contacts_queue() {
             //读取电话多值
             for (CNLabeledValue *value in contact.phoneNumbers) {
                 
-                if (value.label && value.label.length > 0) {
-                    CNPhoneNumber *phoneNum = value.value;
-                    NSString *phone = phoneNum.stringValue;
-                
-                    [model.mobileArray addObject:phone];
-                
-                }
+                CNPhoneNumber *phoneNum = value.value;
+                NSString *phone = phoneNum.stringValue;
+            
+                [model.mobileArray addObject:phone];
             }
             
             model.identifier = contact.identifier;
@@ -303,11 +298,10 @@ static dispatch_queue_t get_all_contacts_queue() {
          [self.contactsArray enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
              
              NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
-             NSLog(@"firstLetterString :%@",firstLetterString);
              
              if (addressBookDict[firstLetterString]) {
                  [addressBookDict[firstLetterString] addObject:model];
-                 NSLog(@"addressBookDict :%@",addressBookDict);
+            
              } else {
                  //创建新发可变数组存储该首字母对应的联系人模型
                  NSMutableArray *arrGroupNames = [NSMutableArray arrayWithCapacity:10];
@@ -321,30 +315,24 @@ static dispatch_queue_t get_all_contacts_queue() {
              
              //         // 将addressBookDict字典中的所有Key值进行排序: A~Z
              NSArray *nameKeys = [[addressBookDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
-             //
-             NSLog(@"%@,",nameKeys);
-             //
+
              // 将 "#" 排列在 A~Z 的后面
              if ([nameKeys.firstObject isEqualToString:@"#"]) {
                  NSMutableArray *mutableNamekeys = [NSMutableArray arrayWithArray:nameKeys];
                  [mutableNamekeys insertObject:nameKeys.firstObject atIndex:nameKeys.count];
                  [mutableNamekeys removeObjectAtIndex:0];
-                 
-//                 dispatch_async(dispatch_get_main_queue(), ^{
-                     self.sortDic = addressBookDict;
-                     self.nameKeys = mutableNamekeys;
-//                     addressBookInfo ? addressBookInfo(addressBookDict,mutableNamekeys) : nil;
-//                 });
+            
+                 self.sortDic = addressBookDict;
+                 self.nameKeys = mutableNamekeys;
                  [[NSNotificationCenter defaultCenter] postNotificationName:@"ContantsChange" object:nil];
                  return;
              }
-             [[NSNotificationCenter defaultCenter] postNotificationName:@"ContantsChange" object:nil];
+         
              // 将排序好的通讯录数据回调到主线程
-//             dispatch_async(dispatch_get_main_queue(), ^{
-                 self.sortDic = addressBookDict;
-                 self.nameKeys = [nameKeys mutableCopy];;
-//                 addressBookInfo ? addressBookInfo(addressBookDict,nameKeys) : nil;
-//             });
+             self.sortDic = addressBookDict;
+             self.nameKeys = [nameKeys mutableCopy];
+             [[NSNotificationCenter defaultCenter] postNotificationName:@"ContantsChange" object:nil];
+
      });
 }
 

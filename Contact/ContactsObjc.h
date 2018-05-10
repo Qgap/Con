@@ -25,4 +25,6 @@ typedef void(^ContactsArray) (NSArray *contacts);
 
 + (void)deleteRecord:(GQContactModel *)model;
 
+- (void)getOrderAddressBook;
+
 @end

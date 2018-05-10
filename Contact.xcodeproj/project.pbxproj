@@ -11,6 +11,7 @@
 		3A9F988720A4141400585ED7 /* NoPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F988620A4141400585ED7 /* NoPhoneViewController.m */; };
 		3A9F988A20A42B6100585ED7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F988C20A42B6100585ED7 /* InfoPlist.strings */; };
 		3A9F989120A42C4300585ED7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F989320A42C4300585ED7 /* Localizable.strings */; };
+		3AA3DFA920A48FF70034BE92 /* GQTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA3DFA820A48FF70034BE92 /* GQTools.m */; };
 		3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309E520A1726A00035C9A /* AppDelegate.m */; };
 		3AB309EE20A1726A00035C9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AB309ED20A1726A00035C9A /* Assets.xcassets */; };
 		3AB309F420A1726A00035C9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309F320A1726A00035C9A /* main.m */; };
@@ -52,6 +53,8 @@
 		3A9F988E20A42B7600585ED7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		3A9F989220A42C4300585ED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3A9F989420A42C4800585ED7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		3AA3DFA720A48FF70034BE92 /* GQTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQTools.h; sourceTree = "<group>"; };
+		3AA3DFA820A48FF70034BE92 /* GQTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQTools.m; sourceTree = "<group>"; };
 		3AB309E120A1726A00035C9A /* Contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Contact.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB309E420A1726A00035C9A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3AB309E520A1726A00035C9A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -150,6 +153,8 @@
 				3A9F988C20A42B6100585ED7 /* InfoPlist.strings */,
 				3A9F989320A42C4300585ED7 /* Localizable.strings */,
 				3A2B3C4420A4440D00EFAABE /* GQContactHeader.h */,
+				3AA3DFA720A48FF70034BE92 /* GQTools.h */,
+				3AA3DFA820A48FF70034BE92 /* GQTools.m */,
 			);
 			path = Contact;
 			sourceTree = "<group>";
@@ -315,6 +320,7 @@
 				3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */,
 				3A9F988420A3ECA400585ED7 /* MergeSamePhoneViewController.m in Sources */,
 				3AB30A1B20A176BE00035C9A /* GQMainViewController.m in Sources */,
+				3AA3DFA920A48FF70034BE92 /* GQTools.m in Sources */,
 				3AB30A2120A17C3A00035C9A /* GQManagerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -22,8 +22,6 @@
 
 @property (nonatomic, strong)UITableView *tableView;
 
-@property (nonatomic, copy)NSMutableArray *dataArray;
-
 @property (nonatomic, copy) NSDictionary *contactPeopleDict;
 @property (nonatomic, copy) NSArray *keys;
 @property (nonatomic, strong)NSIndexPath *indexPath;
@@ -36,6 +34,11 @@
 
 @property (nonatomic, strong)ContactsObjc *contactObject;
 
+@property (nonatomic, strong)UIAlertController *alertController;
+
+@property (nonatomic,strong)NSArray *contactsArray;
+
+
 @end
 
 @implementation GQContactViewController
@@ -43,7 +46,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadData) name:@"ContantsChange" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshData) name:@"ContantsChange" object:nil];
     }
     return self;
 }
@@ -67,6 +70,11 @@
     [self loadData];
 }
 
+- (void)refreshData {
+    NSLog(@"refreshData");
+    [self loadData];
+}
+
 - (void)loadData {
     
     [self.deleteArray removeAllObjects];
@@ -74,12 +82,17 @@
     if (!self.contactObject.granted) {
         [self accessDeniedTip];
     } else {
+        [self.alertController dismissViewControllerAnimated:YES completion:nil];
+        if ([self.contactPeopleDict isEqualToDictionary:self.contactObject.sortDic] && self.contactPeopleDict.count != 0) {
+            return;
+        } else {
+            self.contactPeopleDict = self.contactObject.sortDic;
+            self.keys = self.contactObject.nameKeys;
+            dispatch_main_async_safe(^{
+                [self.tableView reloadData];
+            });
+        }
         
-        self.contactPeopleDict = self.contactObject.sortDic;
-        self.keys = self.contactObject.nameKeys;
-        dispatch_main_async_safe(^{
-           [self.tableView reloadData];
-        });
         //    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
         //        self.contactPeopleDict = addressBookDict;
         //        self.keys = nameKeys;
@@ -146,12 +159,18 @@
 
 - (void)accessDeniedTip {
     
-    UIAlertController *alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"tip", @"") message:NSLocalizedString(@"accessErrorMsg", ) preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok", ) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self accessDeniedTip];
-    }];
-    [alertView addAction:action];
-    [self presentViewController:alertView animated:YES completion:nil];
+    if (self.alertController == nil) {
+        self.alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"tip", @"") message:NSLocalizedString(@"accessErrorMsg", ) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok", ) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            if (!self.contactObject.granted) {
+                [self accessDeniedTip];
+            }
+            
+        }];
+        [self.alertController addAction:action];
+        [self presentViewController:self.alertController animated:YES completion:nil];
+    }
 }
 
 #pragma mark - UITableViewDelegate && UITableViewDataSource
@@ -215,12 +234,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"indexpath:%@",indexPath);
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.isEdit) {
         NSString *key = _keys[indexPath.section];
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
         [self.deleteArray addObject:model];
-        NSLog(@"以选中:%lu",(unsigned long)self.deleteArray.count);
     } else {
 //        https://stackoverflow.com/questions/33391950/contact-is-missing-some-of-the-required-key-descriptors-in-ios/34463528
         NSString *key = _keys[indexPath.section];
@@ -238,7 +257,10 @@
             contactController.delegate = self;
             contactController.allowsActions = YES;
             contactController.allowsEditing = YES;
-            [self.navigationController pushViewController:contactController animated:YES];
+            
+            dispatch_main_async_safe(^{
+                [self.navigationController pushViewController:contactController animated:YES];
+            });
             
         } else {
             // Fallback on earlier versions
@@ -252,6 +274,7 @@
     if (self.isEdit) {
         NSString *key = _keys[indexPath.section];
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
+        
         if ([self.deleteArray containsObject:model]) {
             [self.deleteArray removeObject:model];
         }
@@ -368,11 +391,18 @@
     if (buttonIndex == 1) {
 
         for (GQContactModel *model in self.deleteArray) {
-            NSLog(@"model id :%@ , name:%@",model.identifier, model.fullName);
+            
             [ContactsObjc deleteRecord:model];
+            NSLog(@"model :%@",[self.contactPeopleDict allKeysForObject:model]);
+
+//            NSString *key = _keys[indexPath.section];
+//            GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
+            
+//            [self.contactObject.contactsArray removeObject:model];
+//            [self.contactObject getOrderAddressBook];
+            
         }
         
-        [self loadData];
 
     } else {
         if (!self.isEdit) {

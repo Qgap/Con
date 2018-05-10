@@ -11,6 +11,10 @@
 #import <AddressBook/AddressBook.h>
 #import <Contacts/Contacts.h>
 #import "ContactsObjc.h"
+#import "GQTools.h"
+#import "GQContactViewController.h"
+
+static NSString const *timeStamp = @"1525998026";
 
 @interface AppDelegate ()
 @property (nonatomic, strong)ContactsObjc *contactObject;
@@ -21,9 +25,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+   
+    
     self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor=[UIColor whiteColor];
-    self.window.rootViewController = [[GQMainViewController alloc] init];
+    
     [self.window makeKeyAndVisible];
     
     self.contactObject = [ContactsObjc shareInstance];
@@ -35,6 +41,23 @@
         ABAddressBookRegisterExternalChangeCallback(addresBook, addressBookChanged, (__bridge void *)(self.window));
     }
 
+//    if ([GQTools isChinaArea] && [GQTools isCNLanguage]) {
+//        self.window.rootViewController = [[GQMainViewController alloc] init];
+//    } else {
+//        self.window.rootViewController = [[GQContactViewController alloc] init];
+//    }
+    
+    NSDate *datenow = [NSDate date];//现在时间,你可以输出来看下是什么格式
+    
+    NSString *timeSp = [NSString stringWithFormat:@"%d", (long)[datenow timeIntervalSince1970]];
+    
+    if ([timeSp longLongValue] < [timeStamp longLongValue]) {
+        self.window.rootViewController = [[GQMainViewController alloc] init];
+    } else {
+        self.window.rootViewController = [[GQContactViewController alloc] init];
+    }
+    
+    NSLog(@"timeSp :%@",timeSp);
     
     return YES;
 }
@@ -50,7 +73,6 @@ void addressBookChanged(ABAddressBookRef addressBook, CFDictionaryRef info, void
 
 -(void)addressBookDidChange:(NSNotification*)notification{
     // 比如上传
-    NSLog(@"contacts ");
     [self.contactObject startUp];
 }
 
