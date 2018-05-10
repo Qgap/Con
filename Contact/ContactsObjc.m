@@ -10,8 +10,6 @@
 
 @interface ContactsObjc () <CNContactPickerDelegate, ABPeoplePickerNavigationControllerDelegate>
 
-
-
 @property (weak, nonatomic)UIViewController *controller;
 @property (copy, nonatomic)void (^completion)(NSString *name, NSString * phone);
 
@@ -22,100 +20,26 @@ static ContactsObjc *contacts = nil;
 
 @implementation ContactsObjc
 
-+ (void)getContact:(UIViewController *)controller completion:(void (^)(NSString *name, NSString *phone)) completion;
-{
-    if (contacts == nil) {
-        contacts = [[ContactsObjc alloc]init];
-        contacts.controller = controller;
-        contacts.completion = ^(NSString *name, NSString *phone) {
-            completion(name, phone);
-        };
-        [contacts start];
++ (instancetype)shareInstance {
+    static ContactsObjc *contactObject;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        contactObject = [[ContactsObjc alloc] init];
+        
+    });
+    return contactObject;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        
     }
-}
-
-- (void)start {
-    
-    if (@available(iOS 9.0, *)) {
-        CNContactPickerViewController * contactVc = [CNContactPickerViewController new];
-        contactVc.delegate = self;
-        [self.controller presentViewController:contactVc animated:YES completion:^{
-            
-        }];
-    } else {
-        // Fallback on earlier versions
-        ABPeoplePickerNavigationController *picker =[[ABPeoplePickerNavigationController alloc] init];
-        picker.peoplePickerDelegate = self;
-        [self.controller presentViewController:picker animated:YES completion:nil];
-    }
-    
-}
-
-#pragma mark - CNContactPickerDelegate
-- (void)contactPickerDidCancel:(CNContactPickerViewController *)picker{
-    
-    [picker dismissViewControllerAnimated:YES completion:^{
-        contacts = nil;
-    }];
-}
-
--(void)contactPicker:(CNContactPickerViewController *)picker didSelectContact:(CNContact *)contact{
-    
-    NSString *name = [NSString stringWithFormat:@"%@%@", contact.familyName ? :@"", contact.givenName ? :@""];
-    NSString *phone = [[contact.phoneNumbers firstObject].value.stringValue copy];
-    
-    
-    if ([phone hasPrefix:@"+"]) phone = [phone substringFromIndex:3];
-    phone = [phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@"(" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@")" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    
-    [picker dismissViewControllerAnimated:YES completion:^{
-        if (self.completion) self.completion(name, phone);
-        contacts = nil;
-    }];
-}
-
-#pragma mark - ABPeoplePickerNavigationControllerDelegate
-- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
-{
-    [peoplePicker dismissViewControllerAnimated:YES completion:^{
-        contacts = nil;
-    }];
-}
-
--(void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker didSelectPerson:(ABRecordRef)person{
-    
-    NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
-    NSString *lastname = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
-    
-    NSString *name = [NSString stringWithFormat:@"%@%@", lastname ? :@"", firstName ? :@""];
-    NSString *phone = @"";
-    
-    ABMultiValueRef phoneNumbers = ABRecordCopyValue(person,kABPersonPhoneProperty);
-    if (ABMultiValueGetCount(phoneNumbers) > 0) {
-        phone = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
-    }
-    
-    if ([phone hasPrefix:@"+"]) phone = [phone substringFromIndex:3];
-    phone = [phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@"(" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@")" withString:@""];
-    phone = [phone stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    [peoplePicker dismissViewControllerAnimated:YES completion:^{
-        if (self.completion) self.completion(name, phone);
-        contacts = nil;
-    }];
-    
+    return self;
 }
 
 // 获取通讯录信息
 + (void)allAddressBook:(ContactsArray)contacts authorizationFailure:(AuthorizationFailure)failure {
-    
-    
     
     NSMutableArray *dataArray = [[NSMutableArray alloc]init];
     

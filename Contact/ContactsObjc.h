@@ -14,8 +14,6 @@ typedef void(^ContactsArray) (NSArray *contacts);
 
 @interface ContactsObjc : NSObject
 
-+ (void)getContact:(UIViewController *)controller completion:(void (^)(NSString *name, NSString * phone)) completion;
-
 + (NSArray *)addressBook;
 
 //+ (NSArray *)allAddressBook;

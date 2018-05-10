@@ -43,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A2B3C4420A4440D00EFAABE /* GQContactHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQContactHeader.h; sourceTree = "<group>"; };
 		3A9F988220A3ECA400585ED7 /* MergeSamePhoneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MergeSamePhoneViewController.h; sourceTree = "<group>"; };
 		3A9F988320A3ECA400585ED7 /* MergeSamePhoneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MergeSamePhoneViewController.m; sourceTree = "<group>"; };
 		3A9F988520A4141400585ED7 /* NoPhoneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NoPhoneViewController.h; sourceTree = "<group>"; };
@@ -153,6 +154,7 @@
 				3A9F988620A4141400585ED7 /* NoPhoneViewController.m */,
 				3A9F988C20A42B6100585ED7 /* InfoPlist.strings */,
 				3A9F989320A42C4300585ED7 /* Localizable.strings */,
+				3A2B3C4420A4440D00EFAABE /* GQContactHeader.h */,
 			);
 			path = Contact;
 			sourceTree = "<group>";

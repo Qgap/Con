@@ -12,9 +12,8 @@
 #import "AuthTipView.h"
 #import <ContactsUI/ContactsUI.h>
 #import <AddressBookUI/AddressBookUI.h>
+#import "GQContactHeader.h"
 
-#define SCREEN_WIDTH                        ([UIScreen mainScreen].bounds.size.width)
-#define SCREEN_HEIGHT                       ([UIScreen mainScreen].bounds.size.height)
 
 @interface GQContactViewController () <UITableViewDelegate, UITableViewDataSource,UIAlertViewDelegate,CNContactPickerDelegate,ABPeoplePickerNavigationControllerDelegate,ABNewPersonViewControllerDelegate,CNContactViewControllerDelegate>
 
@@ -86,7 +85,7 @@
     self.edit = NO;
     
     self.cancelBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.cancelBtn.frame = CGRectMake(20, 10, 17, 23);
+    self.cancelBtn.frame = CGRectMake(20, 10, 50, 23);
     [self.cancelBtn setTitle:NSLocalizedString(@"create", @"") forState:UIControlStateNormal];
 //    self.cancelBtn.hidden = YES;
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc]initWithCustomView:self.cancelBtn];
@@ -95,7 +94,7 @@
     self.navigationItem.leftBarButtonItem = leftItem;
 
     self.moreBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.moreBtn.frame = CGRectMake(20, 10, 17, 23);
+    self.moreBtn.frame = CGRectMake(20, 10, 50, 23);
     [self.moreBtn setTitle:NSLocalizedString(@"edit", @"") forState:UIControlStateNormal];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:self.moreBtn];
     [self.moreBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
@@ -114,7 +113,7 @@
     [self.view addSubview:self.tableView];
 
     self.deleteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.deleteBtn.frame = CGRectMake(0, SCREEN_HEIGHT - 49, SCREEN_WIDTH, 49);
+    self.deleteBtn.frame = CGRectMake(0, SCREEN_HEIGHT - 49 - kBottom_HEIGHT , SCREEN_WIDTH, 49);
     [self.deleteBtn addTarget:self action:@selector(deleteContacts) forControlEvents:UIControlEventTouchUpInside];
     [self.deleteBtn setBackgroundColor:[UIColor redColor]];
     [self.deleteBtn setTitle:NSLocalizedString(@"delete", @"") forState:UIControlStateNormal];

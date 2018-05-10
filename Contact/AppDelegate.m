@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "GQMainViewController.h"
+#import <AddressBook/AddressBook.h>
+#import <Contacts/Contacts.h>
 
 @interface AppDelegate ()
 
@@ -23,9 +25,28 @@
     self.window.rootViewController = [[GQMainViewController alloc] init];
     [self.window makeKeyAndVisible];
     
+    
+    if (@available(iOS 9.0, *)) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addressBookDidChange:) name:CNContactStoreDidChangeNotification object:nil];
+    } else {
+        ABAddressBookRef addresBook = ABAddressBookCreateWithOptions(NULL, NULL);
+        ABAddressBookRegisterExternalChangeCallback(addresBook, addressBookChanged, (__bridge void *)(self.window));
+    }
+
+    
     return YES;
 }
 
+void addressBookChanged(ABAddressBookRef addressBook, CFDictionaryRef info, void *context)
+{
+    // 比如上传
+    NSLog(@"has changed ");
+}
+
+-(void)addressBookDidChange:(NSNotification*)notification{
+    // 比如上传
+    NSLog(@"contacts ");
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
