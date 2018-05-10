@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A78269620A2A6270085E1C3 /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */; };
+		3A9F988420A3ECA400585ED7 /* MergeSamePhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F988320A3ECA400585ED7 /* MergeSamePhoneViewController.m */; };
+		3A9F988720A4141400585ED7 /* NoPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F988620A4141400585ED7 /* NoPhoneViewController.m */; };
+		3A9F988A20A42B6100585ED7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F988C20A42B6100585ED7 /* InfoPlist.strings */; };
+		3A9F989120A42C4300585ED7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F989320A42C4300585ED7 /* Localizable.strings */; };
 		3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309E520A1726A00035C9A /* AppDelegate.m */; };
 		3AB309EE20A1726A00035C9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AB309ED20A1726A00035C9A /* Assets.xcassets */; };
 		3AB309F420A1726A00035C9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB309F320A1726A00035C9A /* main.m */; };
@@ -15,7 +18,7 @@
 		3AB30A0920A1726A00035C9A /* ContactUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A0820A1726A00035C9A /* ContactUITests.m */; };
 		3AB30A1B20A176BE00035C9A /* GQMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A1A20A176BE00035C9A /* GQMainViewController.m */; };
 		3AB30A1E20A17C2900035C9A /* GQContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A1D20A17C2900035C9A /* GQContactViewController.m */; };
-		3AB30A2120A17C3A00035C9A /* GQSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2020A17C3A00035C9A /* GQSettingViewController.m */; };
+		3AB30A2120A17C3A00035C9A /* GQManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2020A17C3A00035C9A /* GQManagerViewController.m */; };
 		3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2220A18DDE00035C9A /* ContactsObjc.m */; };
 		3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2F20A1958100035C9A /* GQContactModel.m */; };
 		3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */; };
@@ -40,8 +43,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3A78269420A2A6270085E1C3 /* ContactTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
-		3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
+		3A9F988220A3ECA400585ED7 /* MergeSamePhoneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MergeSamePhoneViewController.h; sourceTree = "<group>"; };
+		3A9F988320A3ECA400585ED7 /* MergeSamePhoneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MergeSamePhoneViewController.m; sourceTree = "<group>"; };
+		3A9F988520A4141400585ED7 /* NoPhoneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NoPhoneViewController.h; sourceTree = "<group>"; };
+		3A9F988620A4141400585ED7 /* NoPhoneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NoPhoneViewController.m; sourceTree = "<group>"; };
+		3A9F988B20A42B6100585ED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3A9F988D20A42B6600585ED7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3A9F988E20A42B7600585ED7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		3A9F989220A42C4300585ED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3A9F989420A42C4800585ED7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		3AB309E120A1726A00035C9A /* Contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Contact.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB309E420A1726A00035C9A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3AB309E520A1726A00035C9A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -58,8 +68,8 @@
 		3AB30A1A20A176BE00035C9A /* GQMainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQMainViewController.m; sourceTree = "<group>"; };
 		3AB30A1C20A17C2900035C9A /* GQContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQContactViewController.h; sourceTree = "<group>"; };
 		3AB30A1D20A17C2900035C9A /* GQContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQContactViewController.m; sourceTree = "<group>"; };
-		3AB30A1F20A17C3A00035C9A /* GQSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQSettingViewController.h; sourceTree = "<group>"; };
-		3AB30A2020A17C3A00035C9A /* GQSettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQSettingViewController.m; sourceTree = "<group>"; };
+		3AB30A1F20A17C3A00035C9A /* GQManagerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQManagerViewController.h; sourceTree = "<group>"; };
+		3AB30A2020A17C3A00035C9A /* GQManagerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQManagerViewController.m; sourceTree = "<group>"; };
 		3AB30A2220A18DDE00035C9A /* ContactsObjc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsObjc.m; sourceTree = "<group>"; };
 		3AB30A2320A18DDE00035C9A /* ContactsObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsObjc.h; sourceTree = "<group>"; };
 		3AB30A2E20A1958100035C9A /* GQContactModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQContactModel.h; sourceTree = "<group>"; };
@@ -129,16 +139,20 @@
 				3AB30A1A20A176BE00035C9A /* GQMainViewController.m */,
 				3AB30A1C20A17C2900035C9A /* GQContactViewController.h */,
 				3AB30A1D20A17C2900035C9A /* GQContactViewController.m */,
-				3AB30A1F20A17C3A00035C9A /* GQSettingViewController.h */,
-				3AB30A2020A17C3A00035C9A /* GQSettingViewController.m */,
+				3AB30A1F20A17C3A00035C9A /* GQManagerViewController.h */,
+				3AB30A2020A17C3A00035C9A /* GQManagerViewController.m */,
 				3AB30A2E20A1958100035C9A /* GQContactModel.h */,
 				3AB30A2F20A1958100035C9A /* GQContactModel.m */,
-				3A78269420A2A6270085E1C3 /* ContactTableViewCell.h */,
-				3A78269520A2A6270085E1C3 /* ContactTableViewCell.m */,
 				3AB96BDE20A2E9BF005345D0 /* AuthTipView.h */,
 				3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */,
 				3AB96BE120A2FC62005345D0 /* GQSortViewController.h */,
 				3AB96BE220A2FC62005345D0 /* GQSortViewController.m */,
+				3A9F988220A3ECA400585ED7 /* MergeSamePhoneViewController.h */,
+				3A9F988320A3ECA400585ED7 /* MergeSamePhoneViewController.m */,
+				3A9F988520A4141400585ED7 /* NoPhoneViewController.h */,
+				3A9F988620A4141400585ED7 /* NoPhoneViewController.m */,
+				3A9F988C20A42B6100585ED7 /* InfoPlist.strings */,
+				3A9F989320A42C4300585ED7 /* Localizable.strings */,
 			);
 			path = Contact;
 			sourceTree = "<group>";
@@ -249,6 +263,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 3AB309D820A1726A00035C9A;
 			productRefGroup = 3AB309E220A1726A00035C9A /* Products */;
@@ -268,6 +283,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AB309EE20A1726A00035C9A /* Assets.xcassets in Resources */,
+				3A9F989120A42C4300585ED7 /* Localizable.strings in Resources */,
+				3A9F988A20A42B6100585ED7 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,16 +309,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A9F988720A4141400585ED7 /* NoPhoneViewController.m in Sources */,
 				3AB96BE320A2FC62005345D0 /* GQSortViewController.m in Sources */,
-				3A78269620A2A6270085E1C3 /* ContactTableViewCell.m in Sources */,
 				3AB309F420A1726A00035C9A /* main.m in Sources */,
 				3AB30A1E20A17C2900035C9A /* GQContactViewController.m in Sources */,
 				3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */,
 				3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */,
 				3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */,
 				3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */,
+				3A9F988420A3ECA400585ED7 /* MergeSamePhoneViewController.m in Sources */,
 				3AB30A1B20A176BE00035C9A /* GQMainViewController.m in Sources */,
-				3AB30A2120A17C3A00035C9A /* GQSettingViewController.m in Sources */,
+				3AB30A2120A17C3A00035C9A /* GQManagerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,11 +354,34 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		3A9F988C20A42B6100585ED7 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3A9F988B20A42B6100585ED7 /* en */,
+				3A9F988D20A42B6600585ED7 /* Base */,
+				3A9F988E20A42B7600585ED7 /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		3A9F989320A42C4300585ED7 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3A9F989220A42C4300585ED7 /* en */,
+				3A9F989420A42C4800585ED7 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		3AB30A0B20A1726A00035C9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -396,6 +437,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -450,7 +492,7 @@
 				INFOPLIST_FILE = Contact/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = gq.Contact;
+				PRODUCT_BUNDLE_IDENTIFIER = gq.Contacts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -465,7 +507,7 @@
 				INFOPLIST_FILE = Contact/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = gq.Contact;
+				PRODUCT_BUNDLE_IDENTIFIER = gq.Contacts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -14,7 +14,7 @@
     if (self = [super initWithFrame:frame]) {
         
         UILabel *tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(30, 200, 300, 60)];
-        tipLabel.text = @"请在iPhone的“设置-隐私-通讯录”选项中，允许应用访问您的通讯录";
+        tipLabel.text = NSLocalizedString(@"accessErrorMsg", nil);
         tipLabel.font = [UIFont systemFontOfSize:16];
         tipLabel.textColor = [UIColor grayColor];
         tipLabel.numberOfLines = 0;
@@ -22,9 +22,9 @@
         [self addSubview:tipLabel];
         
         UIButton *settingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [settingBtn setTitle:@"去设置" forState:UIControlStateNormal];
+        [settingBtn setTitle:NSLocalizedString(@"goSetting", nil) forState:UIControlStateNormal];
         [settingBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [settingBtn addTarget:self action:@selector(authContact) forControlEvents:UIControlEventTouchUpInside];
+//        [settingBtn addTarget:self action:@selector(authContact) forControlEvents:UIControlEventTouchUpInside];
         settingBtn.layer.borderWidth = 1;
         settingBtn.frame = CGRectMake(100, 100, 100, 30);
         [self addSubview:settingBtn];
@@ -37,5 +37,13 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"App-Prefs:root=Privacy&path=Contacts"]];
 
 }
+
+//- (void)showDeniedAlert {
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"tip", @"")
+//                                                    message:NSLocalizedString(@"accessErrorMsg", )
+//                                                   delegate:nil
+//                                          cancelButtonTitle:NSLocalizedString(@"ok", @""),nil];
+//    [alert show];
+//}
 
 @end

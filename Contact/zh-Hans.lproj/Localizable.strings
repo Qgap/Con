@@ -1,0 +1,33 @@
+/* 
+  Localizable.strings
+  Contact
+
+  Created by gap on 2018/5/10.
+  Copyright © 2018年 gq. All rights reserved.
+*/
+
+"edit" = "编辑";
+"done" = "完成";
+"create" = "新建";
+"contacts" = "通讯录";
+"delete" = "删除";
+"manage" = "管理";
+"cancel" = "取消";
+"confirm" = "确认";
+"tip" = "提示";
+"duplicatePhone" = "重复的联系人号码";
+"duplicateName" = "重复的联系人姓名";
+"noPhoneNumber" = "联系人无号码";
+"deleteContact" = "确认删除当前联系人吗";
+"deleteSelectContacts" = "确认删除选择的联系人吗";
+"merge" = "合并";
+"mergeName" = "姓名（单选）";
+"mergePhone" = "电话号码（多选)";
+"clean" = "清理";
+"ok" = "确认";
+"goSetting" = "去设置";
+"accessErrorMsg" = "请在iPhone的“设置-隐私-通讯录”选项中，允许应用访问您的通讯录";
+
+"noDuplicateName" = "";
+"noDuplicatePhone" = "";
+"no" = "";

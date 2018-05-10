@@ -47,7 +47,6 @@
     
     [self setUpUI];
 
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -66,7 +65,7 @@
         [self.tableView reloadData];
     } authorizationFailure:^{
         
-        self.authTipView.hidden = NO;
+        [self accessDeniedTip];
 
     }];
 }
@@ -83,12 +82,12 @@
 
 - (void)setUpUI {
     
-    self.navigationItem.title = @"通讯录";
+    self.navigationItem.title = NSLocalizedString(@"contacts", @"");
     self.edit = NO;
     
     self.cancelBtn = [UIButton buttonWithType:UIButtonTypeSystem];
     self.cancelBtn.frame = CGRectMake(20, 10, 17, 23);
-    [self.cancelBtn setTitle:@"新建" forState:UIControlStateNormal];
+    [self.cancelBtn setTitle:NSLocalizedString(@"create", @"") forState:UIControlStateNormal];
 //    self.cancelBtn.hidden = YES;
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc]initWithCustomView:self.cancelBtn];
     [self.cancelBtn addTarget:self action:@selector(createContact) forControlEvents:UIControlEventTouchUpInside];
@@ -97,7 +96,7 @@
 
     self.moreBtn = [UIButton buttonWithType:UIButtonTypeSystem];
     self.moreBtn.frame = CGRectMake(20, 10, 17, 23);
-    [self.moreBtn setTitle:@"编辑" forState:UIControlStateNormal];
+    [self.moreBtn setTitle:NSLocalizedString(@"edit", @"") forState:UIControlStateNormal];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:self.moreBtn];
     [self.moreBtn addTarget:self action:@selector(editAction) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = rightItem;
@@ -110,7 +109,7 @@
     self.tableView.estimatedSectionFooterHeight = 0;
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.sectionIndexColor = [UIColor grayColor];
-    
+    self.tableView.tableFooterView = [[UIView alloc] init];
     self.tableView.allowsMultipleSelectionDuringEditing = YES;
     [self.view addSubview:self.tableView];
 
@@ -118,7 +117,7 @@
     self.deleteBtn.frame = CGRectMake(0, SCREEN_HEIGHT - 49, SCREEN_WIDTH, 49);
     [self.deleteBtn addTarget:self action:@selector(deleteContacts) forControlEvents:UIControlEventTouchUpInside];
     [self.deleteBtn setBackgroundColor:[UIColor redColor]];
-    [self.deleteBtn setTitle:@"DELETE" forState:UIControlStateNormal];
+    [self.deleteBtn setTitle:NSLocalizedString(@"delete", @"") forState:UIControlStateNormal];
     [self.deleteBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.deleteBtn.hidden = YES;
     [[UIApplication sharedApplication].keyWindow addSubview:self.deleteBtn];
@@ -126,7 +125,15 @@
     self.deleteArray = [[NSMutableArray alloc] init];
 }
 
-
+- (void)accessDeniedTip {
+    
+    UIAlertController *alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"tip", @"") message:NSLocalizedString(@"accessErrorMsg", ) preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok", ) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self accessDeniedTip];
+    }];
+    [alertView addAction:action];
+    [self presentViewController:alertView animated:YES completion:nil];
+}
 
 #pragma mark - UITableViewDelegate && UITableViewDataSource
 
@@ -184,7 +191,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return @"删除";
+    return NSLocalizedString(@"delete", @"");
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -245,11 +252,11 @@
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
         [self.deleteArray addObject: model];
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
-                                                        message:@"确认删除当前联系人吗？"
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"tip", @"")
+                                                        message:NSLocalizedString(@"deleteContact", )
                                                        delegate:self
-                                              cancelButtonTitle:@"取消"
-                                              otherButtonTitles:@"确认", nil];
+                                              cancelButtonTitle:NSLocalizedString(@"cancel", @"")
+                                              otherButtonTitles:NSLocalizedString(@"confirm", @""), nil];
         [alert show];
     
     }
@@ -278,9 +285,11 @@
     [self.tableView setEditing:self.isEdit animated:YES];
     
     if (self.isEdit) {
-        [self.cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [self.cancelBtn setTitle:NSLocalizedString(@"cancel", @"") forState:UIControlStateNormal];
+        [self.moreBtn setTitle:NSLocalizedString(@"done", @"") forState:UIControlStateNormal];
     } else {
-        [self.cancelBtn setTitle:@"新建" forState:UIControlStateNormal];
+        [self.cancelBtn setTitle:NSLocalizedString(@"create", @"") forState:UIControlStateNormal];
+        [self.moreBtn setTitle:NSLocalizedString(@"edit", @"") forState:UIControlStateNormal];
     }
     
 }
@@ -293,9 +302,7 @@
         contactController.delegate = self;
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:contactController];
         [self presentViewController:nav animated:YES completion:nil];
-    }
-    else
-    {
+    } else {
         ABNewPersonViewController *picker = [[ABNewPersonViewController alloc] init];
         ABRecordRef newPerson = ABPersonCreate();
         picker.displayedPerson = newPerson;
@@ -311,12 +318,12 @@
         NSLog(@"您当前没有选择要删除的联系人");
     } else {
         
-        NSString *msg = [NSString stringWithFormat:@"确认删除选中的:%lu个联系人",(unsigned long)self.deleteArray.count];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示"
-                                                        message:msg
+  
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"tip", @"")
+                                                        message:NSLocalizedString(@"deleteSelectContacts", nil)
                                                        delegate:self
-                                              cancelButtonTitle:@"取消"
-                                              otherButtonTitles:@"确认", nil];
+                                              cancelButtonTitle:NSLocalizedString(@"cancel", @"")
+                                              otherButtonTitles:NSLocalizedString(@"confirm", @""), nil];
         [alert show];
     }
     

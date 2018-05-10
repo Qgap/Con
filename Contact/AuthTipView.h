@@ -11,3 +11,5 @@
 @interface AuthTipView : UIView
 
 @end
+
+

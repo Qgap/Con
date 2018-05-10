@@ -1,0 +1,28 @@
+/* 
+  Localizable.strings
+  Contact
+
+  Created by gap on 2018/5/10.
+  Copyright © 2018年 gq. All rights reserved.
+*/
+"edit" = "Edit";
+"done" = "Done";
+"create" = "Creat";
+"contacts" = "Contacts";
+"delete" = "Delete";
+"manage" = "Manage";
+"cancel" = "Cancel";
+"confirm" = "Confirm";
+"tip" = "Tip";
+"duplicatePhone" = "Duplicate Phones";
+"duplicateName" = "Douplicate Names";
+"noPhoneNumber" = "No Phone Numbers";
+"deleteContact" = "Delete current contact";
+"deleteSelectContacts" = "Delete select contacts";
+
+"merge" = "Merge";
+"mergeName" = "Name (Single)";
+"mergePhone" = "Phone (Mutiple)";
+"clean" = "Clean";
+"ok" = "OK";
+"accessErrorMsg" = "Access denied. Please access 'Settings->Privacy->Contacts' to grant this app access to your contacts";

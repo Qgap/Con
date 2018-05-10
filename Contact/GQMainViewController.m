@@ -8,7 +8,7 @@
 
 #import "GQMainViewController.h"
 #import "GQContactViewController.h"
-#import "GQSettingViewController.h"
+#import "GQManagerViewController.h"
 
 @interface GQMainViewController ()
 
@@ -18,18 +18,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     
     self.view.backgroundColor = [UIColor whiteColor];
     
     UINavigationController *contactVC = [[UINavigationController alloc] initWithRootViewController:[[GQContactViewController alloc] init]];
-    contactVC.tabBarItem.title = @"通讯录";
-//    contactVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"limit_select"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-//    contactVC.tabBarItem.image = [[UIImage imageNamed:@"limit_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    contactVC.tabBarItem.title = NSLocalizedString(@"contacts", nil);
+    contactVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"contact_select"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    contactVC.tabBarItem.image = [[UIImage imageNamed:@"contact_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 //
     
-    UINavigationController *settingVC = [[UINavigationController alloc] initWithRootViewController:[[GQSettingViewController alloc] init]];
-    settingVC.tabBarItem.title = @"设置";
-    self.viewControllers = @[contactVC,settingVC];
+    UINavigationController *manageVC = [[UINavigationController alloc] initWithRootViewController:[[GQManagerViewController alloc] init]];
+    manageVC.tabBarItem.title = NSLocalizedString(@"clean", nil);
+    manageVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"manage_select"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    manageVC.tabBarItem.image = [[UIImage imageNamed:@"manage_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.viewControllers = @[contactVC,manageVC];
     
 }
 

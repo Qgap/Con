@@ -139,9 +139,6 @@ static ContactsObjc *contacts = nil;
             return;
         }
         
-        
-        
-        
         NSArray *keys = @[CNContactGivenNameKey,
                           CNContactFamilyNameKey,
                           CNContactPhoneNumbersKey,
@@ -325,6 +322,8 @@ static ContactsObjc *contacts = nil;
                           CNContactIdentifierKey];
         CNMutableContact *contact = [[store unifiedContactWithIdentifier:model.identifier keysToFetch:keys error:nil] mutableCopy];
         NSError *error;
+        if (contact == nil) {return; }
+        
         CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
         [saveRequest deleteContact:contact];
         [store executeSaveRequest:saveRequest error:&error];
