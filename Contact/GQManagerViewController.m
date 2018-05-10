@@ -9,12 +9,9 @@
 #import "GQManagerViewController.h"
 #import "ContactsObjc.h"
 #import "GQContactModel.h"
-#import "AuthTipView.h"
 #import "GQSortViewController.h"
 #import "NoPhoneViewController.h"
-
-#define SCREEN_WIDTH                        ([UIScreen mainScreen].bounds.size.width)
-#define SCREEN_HEIGHT                       ([UIScreen mainScreen].bounds.size.height)
+#import "GQContactHeader.h"
 
 
 @interface GQManagerViewController ()<UITableViewDelegate, UITableViewDataSource>
@@ -25,8 +22,8 @@
 @property (nonatomic, strong)NSMutableArray *samePhoneArray;
 //@property (nonatomic, strong)NSMutableArray *noNameArray;
 @property (nonatomic, strong)NSMutableArray *noPhoneArray;
-@property (nonatomic, strong)AuthTipView *authTipView;
 @property (nonatomic, strong)NSArray *totalArray;
+@property (nonatomic, strong)ContactsObjc *contactObject;
 @end
 
 @implementation GQManagerViewController
@@ -35,26 +32,30 @@
     [super viewDidLoad];
     
     self.navigationItem.title = NSLocalizedString(@"clean", nil);
-    [self.tableView reloadData];
+    
+    self.contactObject = [ContactsObjc shareInstance];
+    
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+//    __block NSMutableArray *allAddress = [NSMutableArray arrayWithCapacity:0];
     
-    __block NSMutableArray *allAddress = [NSMutableArray arrayWithCapacity:0];
-    [ContactsObjc allAddressBook:^(NSArray *contacts) {
-        allAddress = [[NSMutableArray alloc] initWithArray:contacts];
-    } authorizationFailure:^{
-        self.authTipView.hidden = NO;
-        return ;
-    }];
     
-    NSArray *addressArray = [NSArray arrayWithArray:allAddress];
+//    [ContactsObjc allAddressBook:^(NSArray *contacts) {
+//        allAddress = [[NSMutableArray alloc] initWithArray:contacts];
+//    } authorizationFailure:^{
+//        self.authTipView.hidden = NO;
+//        return ;
+//    }];
+    
+    NSArray *addressArray = self.contactObject.contactsArray;
     self.sameNameArray = [[[NSMutableArray alloc] init] mutableCopy];
     self.samePhoneArray = [[[NSMutableArray alloc] init] mutableCopy];
 //    self.noNameArray = [[[NSMutableArray alloc] init] mutableCopy];
     self.noPhoneArray = [[NSMutableArray alloc] init];
-    [allAddress enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.contactObject.contactsArray enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
         
 //        if ([model.fullName isEqualToString:@"*无姓名"]) {
 //            [self.noNameArray addObject:model];
@@ -107,20 +108,11 @@
     }];
     self.totalArray = @[self.sameNameArray,self.samePhoneArray,self.noPhoneArray];
     
-    [self.tableView reloadData];
-    
-}
+    dispatch_main_async_safe(^{
+        [self.tableView reloadData];
+    });
 
-- (AuthTipView *)authTipView {
-    if (!_authTipView) {
-        _authTipView = [[AuthTipView alloc] initWithFrame:self.view.frame];
-        _authTipView.hidden = YES;
-        [self.view addSubview:_authTipView];
-    }
-    
-    return _authTipView;
 }
-
 
 - (UITableView *)tableView {
     if (!_tableView) {

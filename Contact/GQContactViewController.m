@@ -9,7 +9,6 @@
 #import "GQContactViewController.h"
 #import "ContactsObjc.h"
 #import "GQContactModel.h"
-#import "AuthTipView.h"
 #import <ContactsUI/ContactsUI.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import "GQContactHeader.h"
@@ -35,14 +34,28 @@
 
 @property (nonatomic, strong)NSMutableArray *deleteArray;
 
-@property (nonatomic, strong)AuthTipView *authTipView;
+@property (nonatomic, strong)ContactsObjc *contactObject;
 
 @end
 
 @implementation GQContactViewController
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadData) name:@"ContantsChange" object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.contactObject = [ContactsObjc shareInstance];
     
     [self setUpUI];
 
@@ -58,25 +71,32 @@
     
     [self.deleteArray removeAllObjects];
     
-    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
-        self.contactPeopleDict = addressBookDict;
-        self.keys = nameKeys;
-        [self.tableView reloadData];
-    } authorizationFailure:^{
-        
+    if (!self.contactObject.granted) {
         [self accessDeniedTip];
-
-    }];
-}
-
-- (AuthTipView *)authTipView {
-    if (!_authTipView) {
-        _authTipView = [[AuthTipView alloc] initWithFrame:self.view.frame];
-        _authTipView.hidden = YES;
-        [self.view addSubview:_authTipView];
+    } else {
+        
+        self.contactPeopleDict = self.contactObject.sortDic;
+        self.keys = self.contactObject.nameKeys;
+        dispatch_main_async_safe(^{
+           [self.tableView reloadData];
+        });
+        //    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
+        //        self.contactPeopleDict = addressBookDict;
+        //        self.keys = nameKeys;
+        //        [self.tableView reloadData];
+        //];
     }
     
-    return _authTipView;
+    
+//    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
+//        self.contactPeopleDict = addressBookDict;
+//        self.keys = nameKeys;
+//        [self.tableView reloadData];
+//    } authorizationFailure:^{
+//
+//        [self accessDeniedTip];
+//
+//    }];
 }
 
 - (void)setUpUI {

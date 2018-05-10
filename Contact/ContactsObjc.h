@@ -14,12 +14,14 @@ typedef void(^ContactsArray) (NSArray *contacts);
 
 @interface ContactsObjc : NSObject
 
-+ (NSArray *)addressBook;
+@property (nonatomic,assign) BOOL granted;
+@property (nonatomic, strong)NSMutableArray *contactsArray;
+@property (nonatomic, strong)NSDictionary *sortDic;
+@property (nonatomic, strong)NSArray *nameKeys;
 
-//+ (NSArray *)allAddressBook;
-+ (void)allAddressBook:(ContactsArray)contacts authorizationFailure:(AuthorizationFailure)failure;
++ (instancetype)shareInstance;
 
-+ (void)getOrderAddressBook:(AddressBookDictBlock)addressBookInfo authorizationFailure:(AuthorizationFailure)failure;
+- (void)startUp;
 
 + (void)deleteRecord:(GQContactModel *)model;
 

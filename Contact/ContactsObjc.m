@@ -12,7 +12,10 @@
 
 @property (weak, nonatomic)UIViewController *controller;
 @property (copy, nonatomic)void (^completion)(NSString *name, NSString * phone);
-
+//@property (nonatomic,assign) BOOL granted;
+//@property (nonatomic, strong)NSMutableArray *contactsArray;
+//@property (nonatomic, strong)NSMutableDictionary *sortDic;
+//@property (nonatomic, strong)NSMutableArray *nameKeys;
 @end
 
 
@@ -26,6 +29,7 @@ static ContactsObjc *contacts = nil;
     dispatch_once(&onceToken, ^{
         contactObject = [[ContactsObjc alloc] init];
         
+        
     });
     return contactObject;
 }
@@ -33,51 +37,105 @@ static ContactsObjc *contacts = nil;
 - (id)init {
     self = [super init];
     if (self) {
-        
+        [self startUp];
     }
     return self;
 }
 
+- (void)startUp {
+    self.contactsArray = [[NSMutableArray alloc] init];
+    self.nameKeys = [[NSMutableArray alloc] init];
+    self.sortDic = [[NSMutableDictionary alloc] init];
+    [self getAllAddress];
+    [self getOrderAddressBook];
+    
+}
+
+static dispatch_queue_t get_all_contacts_queue() {
+    static dispatch_queue_t get_all_contacts_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        get_all_contacts_queue = dispatch_queue_create("com.gq.get.contact", DISPATCH_QUEUE_SERIAL);
+    });
+    
+    return get_all_contacts_queue;
+}
+
+- (BOOL)granted {
+    if (@available(iOS 9.0, *)) {
+        
+        CNContactStore *store = [[CNContactStore alloc] init];
+        
+        CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+        
+        __block BOOL flag = NO;
+        if (status == CNAuthorizationStatusNotDetermined) {
+            [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                flag = granted;
+            }];
+            return flag;
+        } else if (status == CNAuthorizationStatusAuthorized) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else {
+        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+
+        // 1.获取授权状态
+        ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+        __block BOOL flag = NO;
+        if (status == kABAuthorizationStatusNotDetermined) {
+            ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+                flag = granted;
+
+            });
+        } else if (status == kABAuthorizationStatusAuthorized) {
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+    return NO;
+}
+
+- (void)getAllAddress {
+    if (!self.granted) {return;}
+   
+}
+
+- (NSArray *)contactsArray {
+    if (_contactsArray.count == 0) {
+        [self allAddressBook];
+    }
+    return _contactsArray;
+}
+
+- (NSDictionary *)sortDic {
+    if (_sortDic.count == 0) {     
+        [self getOrderAddressBook];
+    }
+        return _sortDic;
+}
+
+
 // 获取通讯录信息
-+ (void)allAddressBook:(ContactsArray)contacts authorizationFailure:(AuthorizationFailure)failure {
+- (void)allAddressBook {
     
     NSMutableArray *dataArray = [[NSMutableArray alloc]init];
     
     if (@available(iOS 9.0, *)) {
         
         CNContactStore *store = [[CNContactStore alloc] init];
-        
-        CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
-        // 2.如果没有授权,先执行授权失败的block后return
-        if (status == CNAuthorizationStatusNotDetermined) {
-            [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                if (granted) {
-                    
-                } else {
-                    failure ? failure() : nil;
-                    return;
-                }
-            }];
-        } else if (status != CNAuthorizationStatusAuthorized) {
-            failure ? failure() : nil;
-            return;
-        }
-        
+ 
         NSArray *keys = @[CNContactGivenNameKey,
                           CNContactFamilyNameKey,
                           CNContactPhoneNumbersKey,
-                          CNContactThumbnailImageDataKey,
-                          CNContactImageDataKey,
                           CNContactIdentifierKey
                           ];
         
         CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keys];
         
-        static NSDateFormatter *dateFormatter = nil;
-        if (!dateFormatter) {
-            dateFormatter = [[NSDateFormatter alloc]init];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-        }
         
         [store enumerateContactsWithFetchRequest:request error:nil usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
             
@@ -90,9 +148,8 @@ static ContactsObjc *contacts = nil;
             } else {
                 model.fullName = @"*无姓名";
             }
-
-            //读取电话多值
             
+            //读取电话多值
             for (CNLabeledValue *value in contact.phoneNumbers) {
                 
                 if (value.label && value.label.length > 0) {
@@ -104,39 +161,14 @@ static ContactsObjc *contacts = nil;
                 }
             }
             
-            model.headerImage = [UIImage imageWithData:contact.imageData];
-            
             model.identifier = contact.identifier;
-            
-            NSLog(@"recordId :%@",model.identifier);
             
             [dataArray addObject:model];
 
         }];
         
-        contacts ? contacts(dataArray) : nil;
-        
     } else {
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-        
-        // 1.获取授权状态
-        ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
-        if (status == kABAuthorizationStatusNotDetermined) {
-            ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-                if (granted) {
-                    
-                } else {
-                    failure ? failure() : nil;
-                    return;
-                }
-                
-            });
-        } else if (status == kABAuthorizationStatusDenied) {
-            failure ? failure() : nil;
-            return;
-        }
-        
-        
         
         CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBookRef);
         CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBookRef);
@@ -165,24 +197,18 @@ static ContactsObjc *contacts = nil;
             for (int k = 0; k<ABMultiValueGetCount(phone); k++) {
                 //获取該Label下的电话值
                 NSString * personPhone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(phone, k);
-                
                 if (personPhone && personPhone.length > 0) {
-                    
                     [model.mobileArray addObject:personPhone];
                 }
             }
-            
-            NSData *imageData = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
-            model.headerImage = [UIImage imageWithData:imageData];
-            
-            model.recordID = ABRecordGetRecordID(person);
-            
-            [dataArray addObject:model];
-
-        }
         
-        contacts ? contacts(dataArray) : nil;
+            model.recordID = ABRecordGetRecordID(person);
+            [dataArray addObject:model];
+            
+        }
     }
+    self.contactsArray = dataArray;
+    
 }
 
 //// 获取通讯录信息
@@ -267,34 +293,31 @@ static ContactsObjc *contacts = nil;
     }
 }
 
-+ (void)getOrderAddressBook:(AddressBookDictBlock)addressBookInfo authorizationFailure:(AuthorizationFailure)failure {
-    
-    
-    // 将耗时操作放到子线程
+- (void)getOrderAddressBook {
+        // 将耗时操作放到子线程
     dispatch_queue_t queue = dispatch_queue_create("addressBook.infoDict", DISPATCH_QUEUE_SERIAL);
     
      dispatch_async(queue, ^{
          NSMutableDictionary *addressBookDict = [NSMutableDictionary dictionary];
         
-         [ContactsObjc allAddressBook:^(NSArray *contacts) {
-             [contacts enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+         [self.contactsArray enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+             
+             NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
+             NSLog(@"firstLetterString :%@",firstLetterString);
+             
+             if (addressBookDict[firstLetterString]) {
+                 [addressBookDict[firstLetterString] addObject:model];
+                 NSLog(@"addressBookDict :%@",addressBookDict);
+             } else {
+                 //创建新发可变数组存储该首字母对应的联系人模型
+                 NSMutableArray *arrGroupNames = [NSMutableArray arrayWithCapacity:10];
                  
-                 NSString *firstLetterString = [self getFirstLetterFromString:model.fullName];
-                 NSLog(@"firstLetterString :%@",firstLetterString);
-                 
-                 if (addressBookDict[firstLetterString]) {
-                     [addressBookDict[firstLetterString] addObject:model];
-                     NSLog(@"addressBookDict :%@",addressBookDict);
-                 } else {
-                     //创建新发可变数组存储该首字母对应的联系人模型
-                     NSMutableArray *arrGroupNames = [NSMutableArray arrayWithCapacity:10];
-                     
-                     [arrGroupNames addObject:model];
-                     //将首字母-姓名数组作为key-value加入到字典中
-                     [addressBookDict setObject:arrGroupNames forKey:firstLetterString];
-                 }
-                 
-             }];
+                 [arrGroupNames addObject:model];
+                 //将首字母-姓名数组作为key-value加入到字典中
+                 [addressBookDict setObject:arrGroupNames forKey:firstLetterString];
+             }
+             
+         }];
              
              //         // 将addressBookDict字典中的所有Key值进行排序: A~Z
              NSArray *nameKeys = [[addressBookDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
@@ -307,25 +330,25 @@ static ContactsObjc *contacts = nil;
                  [mutableNamekeys insertObject:nameKeys.firstObject atIndex:nameKeys.count];
                  [mutableNamekeys removeObjectAtIndex:0];
                  
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     addressBookInfo ? addressBookInfo(addressBookDict,mutableNamekeys) : nil;
-                 });
+//                 dispatch_async(dispatch_get_main_queue(), ^{
+                     self.sortDic = addressBookDict;
+                     self.nameKeys = mutableNamekeys;
+//                     addressBookInfo ? addressBookInfo(addressBookDict,mutableNamekeys) : nil;
+//                 });
+                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ContantsChange" object:nil];
                  return;
              }
-             
+             [[NSNotificationCenter defaultCenter] postNotificationName:@"ContantsChange" object:nil];
              // 将排序好的通讯录数据回调到主线程
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 addressBookInfo ? addressBookInfo(addressBookDict,nameKeys) : nil;
-             });
-         } authorizationFailure:^{
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 failure ? failure() : nil;
-             });
-         }];
+//             dispatch_async(dispatch_get_main_queue(), ^{
+                 self.sortDic = addressBookDict;
+                 self.nameKeys = [nameKeys mutableCopy];;
+//                 addressBookInfo ? addressBookInfo(addressBookDict,nameKeys) : nil;
+//             });
      });
 }
 
-+ (NSString *)getFirstLetterFromString:(NSString *)aString {
+- (NSString *)getFirstLetterFromString:(NSString *)aString {
     NSMutableString *mutableString = [NSMutableString stringWithString:aString];
     CFStringTransform((CFMutableStringRef)mutableString, NULL, kCFStringTransformToLatin, false);
     NSString *pinyinString = [mutableString stringByFoldingWithOptions:NSDiacriticInsensitiveSearch locale:[NSLocale currentLocale]];
@@ -344,7 +367,7 @@ static ContactsObjc *contacts = nil;
 /**
  多音字处理
  */
-+ (NSString *)polyphoneStringHandle:(NSString *)aString pinyinString:(NSString *)pinyinString {
+- (NSString *)polyphoneStringHandle:(NSString *)aString pinyinString:(NSString *)pinyinString {
     if ([aString hasPrefix:@"长"]) { return @"chang";}
     if ([aString hasPrefix:@"沈"]) { return @"shen"; }
     if ([aString hasPrefix:@"厦"]) { return @"xia";  }

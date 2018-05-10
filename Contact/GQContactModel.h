@@ -15,8 +15,6 @@
 
 @property (nonatomic, strong)NSMutableArray *mobileArray;
 
-@property (nonatomic, copy)UIImage *headerImage;
-
 @property NSInteger recordID;
 
 @property (nonatomic, copy)NSString *identifier;

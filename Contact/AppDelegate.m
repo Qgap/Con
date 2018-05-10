@@ -10,9 +10,10 @@
 #import "GQMainViewController.h"
 #import <AddressBook/AddressBook.h>
 #import <Contacts/Contacts.h>
+#import "ContactsObjc.h"
 
 @interface AppDelegate ()
-
+@property (nonatomic, strong)ContactsObjc *contactObject;
 @end
 
 @implementation AppDelegate
@@ -25,6 +26,7 @@
     self.window.rootViewController = [[GQMainViewController alloc] init];
     [self.window makeKeyAndVisible];
     
+    self.contactObject = [ContactsObjc shareInstance];
     
     if (@available(iOS 9.0, *)) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addressBookDidChange:) name:CNContactStoreDidChangeNotification object:nil];
@@ -41,11 +43,15 @@ void addressBookChanged(ABAddressBookRef addressBook, CFDictionaryRef info, void
 {
     // 比如上传
     NSLog(@"has changed ");
+    ContactsObjc *contactObject = [ContactsObjc shareInstance];
+    [contactObject startUp];
+    
 }
 
 -(void)addressBookDidChange:(NSNotification*)notification{
     // 比如上传
     NSLog(@"contacts ");
+    [self.contactObject startUp];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

@@ -21,7 +21,6 @@
 		3AB30A2120A17C3A00035C9A /* GQManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2020A17C3A00035C9A /* GQManagerViewController.m */; };
 		3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2220A18DDE00035C9A /* ContactsObjc.m */; };
 		3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB30A2F20A1958100035C9A /* GQContactModel.m */; };
-		3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */; };
 		3AB96BE320A2FC62005345D0 /* GQSortViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB96BE220A2FC62005345D0 /* GQSortViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -75,8 +74,6 @@
 		3AB30A2320A18DDE00035C9A /* ContactsObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsObjc.h; sourceTree = "<group>"; };
 		3AB30A2E20A1958100035C9A /* GQContactModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQContactModel.h; sourceTree = "<group>"; };
 		3AB30A2F20A1958100035C9A /* GQContactModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQContactModel.m; sourceTree = "<group>"; };
-		3AB96BDE20A2E9BF005345D0 /* AuthTipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthTipView.h; sourceTree = "<group>"; };
-		3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AuthTipView.m; sourceTree = "<group>"; };
 		3AB96BE120A2FC62005345D0 /* GQSortViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQSortViewController.h; sourceTree = "<group>"; };
 		3AB96BE220A2FC62005345D0 /* GQSortViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQSortViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,8 +141,6 @@
 				3AB30A2020A17C3A00035C9A /* GQManagerViewController.m */,
 				3AB30A2E20A1958100035C9A /* GQContactModel.h */,
 				3AB30A2F20A1958100035C9A /* GQContactModel.m */,
-				3AB96BDE20A2E9BF005345D0 /* AuthTipView.h */,
-				3AB96BDF20A2E9BF005345D0 /* AuthTipView.m */,
 				3AB96BE120A2FC62005345D0 /* GQSortViewController.h */,
 				3AB96BE220A2FC62005345D0 /* GQSortViewController.m */,
 				3A9F988220A3ECA400585ED7 /* MergeSamePhoneViewController.h */,
@@ -318,7 +313,6 @@
 				3AB30A3020A1958100035C9A /* GQContactModel.m in Sources */,
 				3AB30A2420A18DDE00035C9A /* ContactsObjc.m in Sources */,
 				3AB309E620A1726A00035C9A /* AppDelegate.m in Sources */,
-				3AB96BE020A2E9BF005345D0 /* AuthTipView.m in Sources */,
 				3A9F988420A3ECA400585ED7 /* MergeSamePhoneViewController.m in Sources */,
 				3AB30A1B20A176BE00035C9A /* GQMainViewController.m in Sources */,
 				3AB30A2120A17C3A00035C9A /* GQManagerViewController.m in Sources */,
