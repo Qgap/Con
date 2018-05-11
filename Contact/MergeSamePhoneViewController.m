@@ -93,7 +93,6 @@
         for (NSString *phone in self.selectPhoneArray) {
             CNLabeledValue *phoneNumber = [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMobile value:[CNPhoneNumber phoneNumberWithStringValue:phone]];
             
-            NSLog(@"phone :%@",phone);
             [phoneNumbers addObject:phoneNumber];
         }
         

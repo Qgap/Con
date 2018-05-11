@@ -38,7 +38,7 @@
 
 @property (nonatomic,strong)NSArray *contactsArray;
 
-
+@property (nonatomic, strong)UILabel *emptyLabel;
 @end
 
 @implementation GQContactViewController
@@ -71,18 +71,14 @@
 }
 
 - (void)refreshData {
-    NSLog(@"refreshData");
     [self loadData];
 }
 
 - (void)loadData {
     
-    [self.deleteArray removeAllObjects];
-    
-    if (!self.contactObject.granted) {
+    if (self.contactObject.authStatus == StatusDetermined) {
         [self accessDeniedTip];
     } else {
-        [self.alertController dismissViewControllerAnimated:YES completion:nil];
         if ([self.contactPeopleDict isEqualToDictionary:self.contactObject.sortDic] && self.contactPeopleDict.count != 0) {
             return;
         } else {
@@ -93,23 +89,23 @@
             });
         }
         
-        //    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
-        //        self.contactPeopleDict = addressBookDict;
-        //        self.keys = nameKeys;
-        //        [self.tableView reloadData];
-        //];
+        NSLog(@"empt :%@",self.contactObject.empt ? @"SHOW":@"HIDDEN"); 
+        
+        if (self.contactObject.empt) {
+            dispatch_main_async_safe(^{
+                self.emptyLabel.hidden = NO;
+                self.tableView.hidden = YES;
+            });
+            
+        } else {
+            dispatch_main_async_safe(^{
+                self.emptyLabel.hidden = YES;
+                self.tableView.hidden = NO;
+            });
+            
+        }
     }
-    
-    
-//    [ContactsObjc getOrderAddressBook:^(NSDictionary<NSString *,NSArray *> *addressBookDict, NSArray *nameKeys) {
-//        self.contactPeopleDict = addressBookDict;
-//        self.keys = nameKeys;
-//        [self.tableView reloadData];
-//    } authorizationFailure:^{
-//
-//        [self accessDeniedTip];
-//
-//    }];
+
 }
 
 - (void)setUpUI {
@@ -152,9 +148,25 @@
     [self.deleteBtn setTitle:NSLocalizedString(@"delete", @"") forState:UIControlStateNormal];
     [self.deleteBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.deleteBtn.hidden = YES;
-    [[UIApplication sharedApplication].keyWindow addSubview:self.deleteBtn];
+    
+    [self.view addSubview:self.deleteBtn];
     
     self.deleteArray = [[NSMutableArray alloc] init];
+}
+
+- (UILabel *)emptyLabel {
+    if (!_emptyLabel) {
+        
+        _emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(30, 100, SCREEN_WIDTH - 60, 200)];
+        _emptyLabel.textAlignment = NSTextAlignmentCenter;
+        _emptyLabel.font = [UIFont systemFontOfSize:18];
+        _emptyLabel.numberOfLines = 0;
+        _emptyLabel.text = NSLocalizedString(@"noContacts", @"");
+        _emptyLabel.textColor = [UIColor grayColor];
+        [self.view addSubview:_emptyLabel];
+    }
+    
+    return _emptyLabel;
 }
 
 - (void)accessDeniedTip {
@@ -163,9 +175,10 @@
         self.alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"tip", @"") message:NSLocalizedString(@"accessErrorMsg", ) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok", ) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
-            if (!self.contactObject.granted) {
+            if (self.contactObject.authStatus == StatusDetermined) {
                 [self accessDeniedTip];
-            }
+                
+            } 
             
         }];
         [self.alertController addAction:action];
@@ -233,14 +246,14 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"indexpath:%@",indexPath);
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.isEdit) {
         NSString *key = _keys[indexPath.section];
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
         [self.deleteArray addObject:model];
     } else {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        
 //        https://stackoverflow.com/questions/33391950/contact-is-missing-some-of-the-required-key-descriptors-in-ios/34463528
         NSString *key = _keys[indexPath.section];
         GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
@@ -322,10 +335,22 @@
 
 - (void)editAction {
     
+    if (self.contactObject.empt && !self.edit) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"tip", @"") message:NSLocalizedString(@"noContactToEdit", ) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok", ) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        }];
+        [alertController addAction:action];
+        [self presentViewController:alertController animated:YES completion:nil];
+        return;
+    }
+    
     self.edit = !self.isEdit;
     self.deleteBtn.hidden = !self.isEdit;
     [self.tableView setEditing:self.isEdit animated:YES];
+    [self.deleteArray removeAllObjects];
     
+    self.tabBarController.tabBar.hidden = self.edit;
     if (self.isEdit) {
         [self.cancelBtn setTitle:NSLocalizedString(@"cancel", @"") forState:UIControlStateNormal];
         [self.moreBtn setTitle:NSLocalizedString(@"done", @"") forState:UIControlStateNormal];
@@ -393,17 +418,11 @@
         for (GQContactModel *model in self.deleteArray) {
             
             [ContactsObjc deleteRecord:model];
-            NSLog(@"model :%@",[self.contactPeopleDict allKeysForObject:model]);
 
-//            NSString *key = _keys[indexPath.section];
-//            GQContactModel *model = [_contactPeopleDict[key] objectAtIndex:indexPath.row];
-            
-//            [self.contactObject.contactsArray removeObject:model];
-//            [self.contactObject getOrderAddressBook];
-            
         }
         
-
+        [self.deleteArray removeAllObjects];
+        
     } else {
         if (!self.isEdit) {
             [self.deleteArray removeAllObjects];

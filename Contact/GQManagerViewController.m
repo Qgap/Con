@@ -103,8 +103,7 @@
             [dic setObject:tmpArray forKey:@"data"];
             [self.sameNameArray addObject:dic];
         }
-        
-        NSLog(@"same name = %@,same phone :%@, no name %@",self.sameNameArray,self.samePhoneArray,self.noPhoneArray);
+    
     }];
     self.totalArray = @[self.sameNameArray,self.samePhoneArray,self.noPhoneArray];
     

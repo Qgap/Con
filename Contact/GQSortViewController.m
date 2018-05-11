@@ -119,8 +119,6 @@
 
                 __block NSMutableArray *phoneNumbers = [mutableContact.phoneNumbers mutableCopy];
                 
-                NSLog(@"phoneNumbers :%@",phoneNumbers);
-                
                 [modelArray enumerateObjectsUsingBlock:^(GQContactModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
                     if (idx != 0) {
                         
@@ -128,7 +126,7 @@
                             CNLabeledValue *phoneNumber = [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMobile
                                                                           value:[CNPhoneNumber phoneNumberWithStringValue:phone]];
                             
-                            NSLog(@"phone :%@",phone);
+            
                             [phoneNumbers addObject:phoneNumber];
                         }
                         [ContactsObjc deleteRecord:model];
@@ -139,7 +137,6 @@
 
                 mutableContact.phoneNumbers = phoneNumbers;
                 
-                NSLog(@"mutableContact.phoneNumbers :%@",phoneNumbers);
                 CNSaveRequest * saveRequest = [[CNSaveRequest alloc] init];
                 [saveRequest updateContact:mutableContact];
                 BOOL result = [store executeSaveRequest:saveRequest error:nil];
@@ -235,7 +232,6 @@
             return self.sameNameArray.count;
             break;
         case SamePhoneType:
-            NSLog(@"same phone :%ld",self.samePhoneArray.count);
             return self.samePhoneArray.count;
             break;
         case NoNameType:

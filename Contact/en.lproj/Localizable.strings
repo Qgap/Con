@@ -7,7 +7,7 @@
 */
 "edit" = "Edit";
 "done" = "Done";
-"create" = "Creat";
+"create" = "Create";
 "contacts" = "Contacts";
 "delete" = "Delete";
 "manage" = "Manage";
@@ -20,9 +20,13 @@
 "deleteContact" = "Delete current contact";
 "deleteSelectContacts" = "Delete select contacts";
 
+"noContacts" = "There is no contact in the current address book, you can creat ";
+
 "merge" = "Merge";
 "mergeName" = "Name (Single)";
 "mergePhone" = "Phone (Mutiple)";
 "clean" = "Clean";
 "ok" = "OK";
 "accessErrorMsg" = "Access denied. Please access 'Settings->Privacy->Contacts' to grant this app access to your contacts";
+
+"noContactToEdit" = " No editable contacts";

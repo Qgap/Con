@@ -51,11 +51,11 @@ static NSString const *timeStamp = @"1525998026";
     
     NSString *timeSp = [NSString stringWithFormat:@"%d", (long)[datenow timeIntervalSince1970]];
     
-    if ([timeSp longLongValue] < [timeStamp longLongValue]) {
+//    if ([timeSp longLongValue] < [timeStamp longLongValue]) {
         self.window.rootViewController = [[GQMainViewController alloc] init];
-    } else {
-        self.window.rootViewController = [[GQContactViewController alloc] init];
-    }
+//    } else {
+//        self.window.rootViewController = [[GQContactViewController alloc] init];
+//    }
     
     NSLog(@"timeSp :%@",timeSp);
     

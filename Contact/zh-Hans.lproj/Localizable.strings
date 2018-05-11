@@ -28,6 +28,5 @@
 "goSetting" = "去设置";
 "accessErrorMsg" = "请在iPhone的“设置-隐私-通讯录”选项中，允许应用访问您的通讯录";
 
-"noDuplicateName" = "";
-"noDuplicatePhone" = "";
-"no" = "";
+"noContacts" = "当前通讯录没有联系人";
+"noContactToEdit" = "当前没有可编辑的联系人";

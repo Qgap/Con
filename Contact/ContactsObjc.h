@@ -12,12 +12,19 @@ typedef void(^AuthorizationFailure)(void);
 
 typedef void(^ContactsArray) (NSArray *contacts);
 
+typedef enum : NSUInteger {
+    StatusNotDetermined,
+    StatusAuthorized,
+    StatusDetermined
+} AuthorizationStatus;
+
 @interface ContactsObjc : NSObject
 
-@property (nonatomic,assign) BOOL granted;
+@property (nonatomic,assign) AuthorizationStatus authStatus;
 @property (nonatomic, strong)NSMutableArray *contactsArray;
 @property (nonatomic, strong)NSDictionary *sortDic;
 @property (nonatomic, strong)NSArray *nameKeys;
+@property (nonatomic,assign) BOOL empt;
 
 + (instancetype)shareInstance;
 
